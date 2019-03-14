@@ -1,7 +1,7 @@
 # Binary Build
 
 This example describes how to deploy a web archive (war) in Wildfly using the OpenShift client (oc) in binary mode.
-The example is inspired by Red Hat's `blog <https://blog.openshift.com/binary-input-sources-openshift-3-2/>`__.
+The example is inspired by APPUiO blog: <http://docs.appuio.ch/en/latest/app/wildflybinarydeployment.html>
 
 ## Create a new project
 
