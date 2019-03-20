@@ -1005,6 +1005,8 @@ $ mysql -u$MYSQL_USER -p$MYSQL_PASSWORD -h$MYSQL_SERVICE_HOST suva < /tmp/08_dum
 mysqldump --user=$MYSQL_USER --password=$MYSQL_PASSWORD --host=$MYSQL_SERVICE_HOST suva > /tmp/dump.sql
 ```
 
+
+
 # Troubleshooting, was ist im Pod?
 
 In diesem Lab wird aufgezeigt, wie man im Fehlerfall und Troubleshooting vorgehen kann und welche Tools einem dabei zur Verfügung stehen.
