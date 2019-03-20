@@ -1,4 +1,4 @@
-# Ein Docker Image deployen
+# Develop Application
 
 In diesem Lab werden wir gemeinsam das erste "pre-built" Docker Image deployen und die OpenShift-Konzepte Pod, Service, DeploymentConfig und ImageStream etwas genauer anschauen.
 
@@ -11,10 +11,10 @@ Nachdem wir im vorher den Source-to-Image Workflow, wie auch ein Binary und Dock
 
 Als ersten Schritt erstellen wir dafür ein neues Projekt. Ein Projekt ist eine Gruppierung von Ressourcen (Container und Docker Images, Pods, Services, Routen, Konfiguration, Quotas, Limiten und weiteres). Für das Projekt berechtigte User können diese Ressourcen verwalten. Innerhalb eines OpenShift Clusters muss der Name eines Projektes eindeutig sein.
 
-Erstellen Sie daher ein neues Projekt mit dem Namen `[USER]-dockerimage`:
+Erstellen Sie daher ein neues Projekt mit dem Namen `develop-userXY`:
 
 ```
-$ oc new-project [USER]-dockerimage
+$ oc new-project develop-userXY
 ```
 
 `oc new-project` wechselt automatisch in das eben neu angelegte Projekt. Mit dem `oc get` Command können Ressourcen von einem bestimmten Typ angezeigt werden.
@@ -32,7 +32,7 @@ $ oc new-app appuio/example-spring-boot
 ```
 Output:
 ```
---> Found Docker image d790313 (3 weeks old) from Docker Hub for "appuio/example-spring-boot"
+--> Found Docker image e355426 (3 months old) from Docker Hub for "appuio/example-spring-boot"
 
     APPUiO Spring Boot App
     ----------------------
@@ -70,7 +70,7 @@ $ oc get pods -w
 Je nach Internetverbindung oder abhängig davon, ob das Image auf Ihrem OpenShift Node bereits heruntergeladen wurde, kann das eine Weile dauern. Schauen Sie sich doch in der Web Console den aktuellen Status des Deployments an:
 
 1. Loggen Sie sich in der Web Console ein
-2. Wählen Sie Ihr Projekt `[USER]-dockerimage` aus
+2. Wählen Sie Ihr Projekt `develop-userXY` aus
 3. Klicken Sie auf Applications
 4. Wählen Sie Pods aus
 
@@ -193,15 +193,15 @@ $ oc describe service example-spring-boot
 ```
 
 ```
-Name:			example-spring-boot
-Namespace:		techlab
-Labels:			app=example-spring-boot
-Selector:		app=example-spring-boot,deploymentconfig=example-spring-boot
-Type:			ClusterIP
-IP:				172.30.124.20
-Port:			8080-tcp	8080/TCP
-Endpoints:		10.1.3.20:8080
-Session Affinity:	None
+Name:      example-spring-boot
+Namespace:    techlab
+Labels:      app=example-spring-boot
+Selector:    app=example-spring-boot,deploymentconfig=example-spring-boot
+Type:      ClusterIP
+IP:        172.30.124.20
+Port:      8080-tcp  8080/TCP
+Endpoints:    10.1.3.20:8080
+Session Affinity:  None
 No events.
 ```
 
@@ -240,16 +240,6 @@ Im Gegensatz zur DeploymentConfig, mit welcher man OpenShift sagt, wie eine Appl
 
 **Tipp:** für jeden Resource Type gibt es auch eine Kurzform. So können Sie bspw. `oc get deploymentconfig` auch einfach als `oc get dc` schreiben.
 
----
-
-## Zusatzaufgabe für Schnelle ;-)
-
-Schauen Sie sich die erstellten Ressourcen mit `oc get [ResourceType] [Name] -o json` und `oc describe [ResourceType] [Name]` aus dem ersten Projekt `[USER]-example1` an.
-
----
-
-<p width="100px" align="right"><a href="05_create_route.md">Routen erstellen →</a></p>
-
 # Unseren Service mittels Route online verfügbar machen
 
 In diesem Lab werden wir die Applikation von vorher über **https** vom Internet her erreichbar machen.
@@ -267,7 +257,7 @@ Aktuell werden folgende Protokolle unterstützt:
 
 ## Aufgabe
 
-Vergewissern Sie sich, dass Sie sich im Projekt `[USER]-dockerimage` befinden. **Tipp:** `oc project [USER]-dockerimage`
+Vergewissern Sie sich, dass Sie sich im Projekt `develop-userXY` befinden. **Tipp:** `oc project develop-userXY`
 
 Erstellen Sie für den Service `example-spring-boot` eine Route und machen Sie ihn darüber öffentlich verfügbar.
 
@@ -319,7 +309,7 @@ In diesem Lab zeigen wir auf, wie man Applikationen in OpenShift skaliert. Des W
 Dafür erstellen wir ein neues Projekt
 
 ```
-$ oc new-project [USER]-scale
+$ oc new-project scale-userXY
 ```
 
 und fügen dem Projekt eine Applikation hinzu
@@ -384,15 +374,15 @@ appuio-php-docker-1-tolpx   1/1       Running   0          2m
 Zum Schluss schauen wir uns den Service an. Der sollte jetzt alle drei Endpoints referenzieren:
 ```
 $ oc describe svc appuio-php-docker
-Name:			appuio-php-docker
-Namespace:		techlab-scale
-Labels:			app=appuio-php-docker
-Selector:		app=appuio-php-docker,deploymentconfig=appuio-php-docker
-Type:			ClusterIP
-IP:				172.30.166.88
-Port:			8080-tcp	8080/TCP
-Endpoints:		10.1.3.23:8080,10.1.4.13:8080,10.1.5.15:8080
-Session Affinity:	None
+Name:      appuio-php-docker
+Namespace:    techlab-scale
+Labels:      app=appuio-php-docker
+Selector:    app=appuio-php-docker,deploymentconfig=appuio-php-docker
+Type:      ClusterIP
+IP:        172.30.166.88
+Port:      8080-tcp  8080/TCP
+Endpoints:    10.1.3.23:8080,10.1.4.13:8080,10.1.5.15:8080
+Session Affinity:  None
 No events.
 
 ```
@@ -463,7 +453,7 @@ POD: appuio-php-docker-7-pxnr3 TIME: 16:42:49,645
 POD: appuio-php-docker-7-pxnr3 TIME: 16:42:50,684
 ```
 
-In unserem Beispiel verwenden wir einen sehr leichtgewichtigen Pod. Das Verhalten ist ausgeprägter, wenn der Container länger braucht bis er Requests abarbeiten kann. Bspw. Java Applikation von LAB 4: **Startup: 30 Sekunden**
+In unserem Beispiel verwenden wir einen sehr leichtgewichtigen Pod. Das Verhalten ist ausgeprägter, wenn der Container länger braucht bis er Requests abarbeiten kann. Bspw. Java Applikation.
 
 ```
 Pod: example-spring-boot-2-73aln TIME: 16:48:25,251
@@ -673,14 +663,13 @@ Löschen Sie im anderen Terminal einen Pod mit folgendem Befehl
 oc delete pod appuio-php-docker-3-788j5
 ```
 
-
 OpenShift sorgt dafür, dass wieder **n** Replicas des genannten Pods laufen.
 
 # Datenbank anbinden
 
 Die meisten Applikationen sind in irgend einer Art stateful und speichern Daten persistent ab. Sei dies in einer Datenbank oder als Files auf einem Filesystem oder Objectstore. In diesem Lab werden wir in unserem Projekt einen MySQL Service anlegen und an unsere Applikation anbinden, sodass mehrere Applikationspods auf die gleiche Datenbank zugreifen können.
 
-Für dieses Beispiel verwenden wir das Spring Boot Beispiel `[USER]-dockerimage`. **Tipp:** `oc project [USER]-dockerimage`
+Für dieses Beispiel verwenden wir das Spring Boot Beispiel `develop-userxy`. **Tipp:** `oc project develop-userxy`
 
 ## Aufgabe: MySQL Service anlegen
 
@@ -690,20 +679,21 @@ Den MySQL Service können wir sowohl über die Web Console als auch über das CL
 
 Um dasselbe Ergebnis zu erhalten müssen lediglich Datenbankname, Username, Password und DatabaseServiceName gleich gesetzt werden, egal welche Variante verwendet wird:
 
-- MYSQL_USER appuio
-- MYSQL_PASSWORD appuio
-- MYSQL_DATABASE appuio
+- MYSQL_USER techlab
+- MYSQL_PASSWORD techlab
+- MYSQL_DATABASE techlab
 - DATABASE_SERVICE_NAME mysql
 
 ### CLI
 
-Über das CLI kann der MySQL Service wie folgt angelegt werden:
+Über das CLI kann der MySQL Service wie folgt mit Hilfe eines templates angelegt werden:
 
 ```
-$ oc new-app mysql \
-     -pMYSQL_USER=suva \
-     -pMYSQL_PASSWORD=suva \
-     -pMYSQL_DATABASE=suva
+$ oc get templates
+$ oc get templates -n openshift
+$ oc process --parameters mysql-persistent
+$ oc get -n openshift template mysql-persistent -o yaml > mysql-persistent.yml
+$ oc process -pMYSQL_USER=techlab -pMYSQL_PASSWORD=techlab -pMYSQL_DATABASE=techlab -f mysql-persistent.yml | oc create -f -
 ```
 
 ### Web Console
@@ -785,10 +775,10 @@ type: Opaque
 Die konkreten Werte sind base64-kodiert. Unter Linux oder in der Gitbash kann man sich den entsprechenden Wert einfach mittels:
 
 ```bash
-$ echo "c3V2YQo" | base64 -d
-appuio
+$ echo "dGVjaGxhYg==" | base64 -d
+techlab
 ```
-anzeigen lassen. In userem Fall wird `c3V2YQo` in `suva` dekodiert.
+anzeigen lassen. In userem Fall wird `dGVjaGxhYg==` in `techlab` dekodiert.
 
 Mit Secrets können wir also sensitive Informationen (Credetials, Zertifikate, Schlüssel, dockercfg, ...) abspeichern und entsprechend von den Pods entkoppeln. Gleichzeitig haben wir damit die Möglichkeit, dieselben Secrets in mehreren Containern zu verwenden und so Redundanzen zu vermeiden.
 
@@ -800,10 +790,10 @@ Weitere Informationen zu Secrets können in der [offiziellen Dokumentation](http
 
 Standardmässig wird bei unserer example-spring-boot Applikation eine H2 Memory Datenbank verwendet. Dies kann über das Setzen der folgenden Umgebungsvariablen entsprechend auf unseren neuen MySQL Service umgestellt werden:
 
-- SPRING_DATASOURCE_USERNAME suva
-- SPRING_DATASOURCE_PASSWORD suva
+- SPRING_DATASOURCE_USERNAME techlab
+- SPRING_DATASOURCE_PASSWORD techlab
 - SPRING_DATASOURCE_DRIVER_CLASS_NAME com.mysql.jdbc.Driver
-- SPRING_DATASOURCE_URL jdbc:mysql://[Adresse des MySQL Service]/appuio?autoReconnect=true
+- SPRING_DATASOURCE_URL jdbc:mysql://[Adresse des MySQL Service]/techlab?autoReconnect=true
 
 Für die Adresse des MySQL Service können wir entweder dessen Cluster IP (`oc get service`) oder aber dessen DNS-Namen (`<service>`) verwenden. Alle Services und Pods innerhalb eines Projektes können über DNS aufgelöst werden.
 
@@ -811,7 +801,7 @@ So lautet der Wert für die Variable SPRING_DATASOURCE_URL bspw.:
 ```
 Name des Services: mysql
 
-jdbc:mysql://mysql/appuio?autoReconnect=true
+jdbc:mysql://mysql/techlab?autoReconnect=true
 ```
 
 Diese Umgebungsvariablen können wir nun in der DeploymentConfig example-spring-boot setzen. Nach dem **ConfigChange** (ConfigChange ist in der DeploymentConfig als Trigger registriert) wird die Applikation automatisch neu deployed. Aufgrund der neuen Umgebungsvariablen verbindet die Applikation an die MySQL DB und [Liquibase](http://www.liquibase.org/) kreiert das Schema und importiert die Testdaten.
@@ -820,7 +810,7 @@ Diese Umgebungsvariablen können wir nun in der DeploymentConfig example-spring-
 
 
 ```
-SPRING_DATASOURCE_URL=jdbc:mysql://mysql/appuio?autoReconnect=true
+SPRING_DATASOURCE_URL=jdbc:mysql://mysql/techlab?autoReconnect=true
 ```
 **Note:** mysql löst innerhalb Ihres Projektes via DNS Abfrage auf die Cluster IP des MySQL Service auf. Die MySQL Datenbank ist nur innerhalb des Projektes erreichbar. Der Service ist ebenfalls über den folgenden Namen erreichbar:
 
@@ -833,9 +823,9 @@ mysql.techlab-dockerimage.svc.cluster.local
 Befehl für das Setzen der Umgebungsvariablen:
 ```
 $ oc set env dc example-spring-boot \
-      -e SPRING_DATASOURCE_URL="jdbc:mysql://mysql/appuio?autoReconnect=true" \
-      -e SPRING_DATASOURCE_USERNAME=suva \ 
-      -e SPRING_DATASOURCE_PASSWORD=suva \
+      -e SPRING_DATASOURCE_URL="jdbc:mysql://mysql/techlab?autoReconnect=true" \
+      -e SPRING_DATASOURCE_USERNAME=techlab \
+      -e SPRING_DATASOURCE_PASSWORD=techlab \
       -e SPRING_DATASOURCE_DRIVER_CLASS_NAME=com.mysql.jdbc.Driver
 ```
 
@@ -848,23 +838,23 @@ $ oc set env dc example-spring-boot \
 ```
 ...
  "env": [
-	        {
-	            "name": "SPRING_DATASOURCE_USERNAME",
-	            "value": "suva"
-	        },
-	        {
-	            "name": "SPRING_DATASOURCE_PASSWORD",
-	            "value": "suva"
-	        },
-	        {
-	            "name": "SPRING_DATASOURCE_DRIVER_CLASS_NAME",
-	            "value": "com.mysql.jdbc.Driver"
-	        },
-	        {
-	            "name": "SPRING_DATASOURCE_URL",
-	            "value": "jdbc:mysql://mysql/appuio"
-	        }
-	    ],
+          {
+              "name": "SPRING_DATASOURCE_USERNAME",
+              "value": "techlab"
+          },
+          {
+              "name": "SPRING_DATASOURCE_PASSWORD",
+              "value": "techlab"
+          },
+          {
+              "name": "SPRING_DATASOURCE_DRIVER_CLASS_NAME",
+              "value": "com.mysql.jdbc.Driver"
+          },
+          {
+              "name": "SPRING_DATASOURCE_URL",
+              "value": "jdbc:mysql://techlab/appuio"
+          }
+      ],
 ...
 ```
 
@@ -882,33 +872,33 @@ Mittels `oc edit dc example-spring-boot -o json` kann die DeploymentConfig als J
 ```
 ...
 "env": [
-			{
-				"name": "SPRING_DATASOURCE_USERNAME",
-				"valueFrom": {
-					"secretKeyRef": {
-						"key": "database-user",
-						"name": "mysql"
-					}
-				}
-			},
-			{
-				"name": "SPRING_DATASOURCE_PASSWORD",
-				"valueFrom": {
-					"secretKeyRef": {
-						"key": "database-password",
-						"name": "mysql"
-					}
-				}
-			},
-			{
-	            "name": "SPRING_DATASOURCE_DRIVER_CLASS_NAME",
-	            "value": "com.mysql.jdbc.Driver"
-	        },
-	        {
-	            "name": "SPRING_DATASOURCE_URL",
-	            "value": "jdbc:mysql://mysql/appuio"
-	        }
-		],
+      {
+        "name": "SPRING_DATASOURCE_USERNAME",
+        "valueFrom": {
+          "secretKeyRef": {
+            "key": "database-user",
+            "name": "mysql"
+          }
+        }
+      },
+      {
+        "name": "SPRING_DATASOURCE_PASSWORD",
+        "valueFrom": {
+          "secretKeyRef": {
+            "key": "database-password",
+            "name": "mysql"
+          }
+        }
+      },
+      {
+              "name": "SPRING_DATASOURCE_DRIVER_CLASS_NAME",
+              "value": "com.mysql.jdbc.Driver"
+          },
+          {
+              "name": "SPRING_DATASOURCE_URL",
+              "value": "jdbc:mysql://mysql/techlab"
+          }
+    ],
 
 ...
 ```
@@ -934,7 +924,7 @@ $ oc rsh mysql-1-diccy
 
 Nun können Sie mittels mysql Tool auf die Datenbank verbinden und die Tabellen anzeigen:
 ```
-$ mysql -u$MYSQL_USER -p$MYSQL_PASSWORD -h$MYSQL_SERVICE_HOST appuio
+$ mysql -u$MYSQL_USER -p$MYSQL_PASSWORD -h$MYSQL_SERVICE_HOST techlab
 Welcome to the MySQL monitor.  Commands end with ; or \g.
 Your MySQL connection id is 54
 Server version: 5.6.26 MySQL Community Server (GPL)
@@ -963,7 +953,7 @@ alle Tabellen anzeigen.
 Die Aufgabe ist es, in den MySQL Pod den [Dump](https://raw.githubusercontent.com/appuio/techlab/lab-3.3/labs/data/08_dump/dump.sql) einzuspielen.
 
 
-**Tipp:** Mit `oc rsync` können Sie lokale Dateien in einen Pod kopieren.
+**Tipp:** Mit `oc rsync` können Sie lokale Dateien in einen Pod kopieren. Alternativ kann auch curl im mysql container verwendet werden.
 
 **Achtung:** Beachten Sie, dass dabei der rsync-Befehl des Betriebssystems verwendet wird. Auf UNIX-Systemen kann rsync mit dem Paketmanager, auf Windows kann bspw. [cwRsync](https://www.itefix.net/cwrsync) installiert werden. Ist eine Installation von rsync nicht möglich, kann stattdessen bspw. in den Pod eingeloggt und via `curl -O <URL>` der Dump heruntergeladen werden.
 
@@ -988,24 +978,22 @@ $ oc rsh mysql-1-diccy
 
 Bestehende Datenbank löschen:
 ```
-$ mysql -u$MYSQL_USER -p$MYSQL_PASSWORD -h$MYSQL_SERVICE_HOST suva
+$ mysql -u$MYSQL_USER -p$MYSQL_PASSWORD -h$MYSQL_SERVICE_HOST techlab
 ...
-mysql> drop database suva;
-mysql> create database suva;
+mysql> drop database techlab;
+mysql> create database techlab;
 mysql> exit
 ```
 Dump einspielen:
 ```
-$ mysql -u$MYSQL_USER -p$MYSQL_PASSWORD -h$MYSQL_SERVICE_HOST suva < /tmp/08_dump/dump.sql
+$ mysql -u$MYSQL_USER -p$MYSQL_PASSWORD -h$MYSQL_SERVICE_HOST techlab < /tmp/08_dump/dump.sql
 ```
 
 **Note:** Den Dump kann man wie folgt erstellen:
 
 ```
-mysqldump --user=$MYSQL_USER --password=$MYSQL_PASSWORD --host=$MYSQL_SERVICE_HOST suva > /tmp/dump.sql
+mysqldump --user=$MYSQL_USER --password=$MYSQL_PASSWORD --host=$MYSQL_SERVICE_HOST techlab > /tmp/dump.sql
 ```
-
-
 
 # Troubleshooting, was ist im Pod?
 
@@ -1013,7 +1001,7 @@ In diesem Lab wird aufgezeigt, wie man im Fehlerfall und Troubleshooting vorgehe
 
 ## In Container einloggen
 
-Wir verwenden dafür wieder das Projekt aus [Lab 4](04_deploy_dockerimage.md) `[USER]-dockerimage`. **Tipp:** `oc project [USER]-dockerimage`
+Wir verwenden dafür wieder das Projekt `develop-userxy`. **Tipp:** `oc project develop-userxy`
 
 Laufende Container werden als unveränderbare Infrastruktur behandelt und sollen generell nicht modifiziert werden. Dennoch gibt es Usecases, bei denen man sich in die Container einloggen muss. Zum Beispiel für Debugging und Analysen.
 
@@ -1088,15 +1076,15 @@ OpenShift 3 erlaubt es, beliebige Ports von der Entwicklungs-Workstation auf ein
 Übung: Auf die Spring Boot Metrics zugreifen.
 
 ```
-oc get pod --namespace="[USER]-dockerimage"
-oc port-forward example-spring-boot-1-xj1df 9000:9000 --namespace="[USER]-dockerimage"
+oc get pod --namespace="develop-userxy"
+oc port-forward example-spring-boot-1-xj1df 9000:9000 --namespace="develop-userxy"
 ```
 
 Nicht vergessen den Pod Namen an die eigene Installation anzupassen. Falls installiert kann dafür Autocompletion verwendet werden.
 
 Die Metrics können nun unter folgendem Link abgerufen werden: [http://localhost:9000/metrics/](http://localhost:9000/metrics/) Die Metrics werden Ihnen als JSON angezeigt. Mit demselben Konzept können Sie nun bspw. mit Ihrem lokalen SQL Client auf eine Datenbank verbinden.
 
-Unter folgendem Link sind weiterführende Informationen zu Port Forwarding zu finden: https://docs.openshift.com/container-platform/3.9/dev_guide/port_forwarding.html
+Unter folgendem Link sind weiterführende Informationen zu Port Forwarding zu finden: https://docs.openshift.com/container-platform/3.11/dev_guide/port_forwarding.html
 
 **Note:** Der `oc port-forward`-Prozess wird solange weiterlaufen, bis er vom User abgebrochen wird. Sobald das Port-Forwarding also nicht mehr benötigt wird, kann er mit ctrl+c gestoppt werden.
 
