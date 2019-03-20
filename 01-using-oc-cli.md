@@ -10,7 +10,8 @@ Create a new project from the webui called:
 
 Copy the login command from the Webconsole (did you find this option? -> in the menu on the right hand side).
 
-    oc login --token XYZ
+    oc login https://api.0xshift.dev:443 --token=XYZ
+    oc whoami
 
 The token allows you to have a logged in session and can be used to do logins from the cli (on the API), without doing the authentication there.
 
@@ -63,9 +64,6 @@ We can mange roles by issuing oc adm policy commands:
     oc adm policy -h
 
 For this lab there is a group called `techlab`, where all workshop users are being part of.
-
-    oc adm groups
-    oc describe group techlab
 
 Let's add this group as an admin role to our current project, so we can co-develop things within these projects.
 

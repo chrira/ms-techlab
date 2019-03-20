@@ -1,15 +1,42 @@
-# Binary Build
+# Builds
+
+There are three different types of builds:
+
+1. Source-To-Image (s2i)
+2. Binary Builds
+3. Container aka. Docker Builds
+
+Let's have a look at the different kinds of builds
+
+## Source-To-Image
+
+Simplest way of getting started from a code base (e.g. Ruby, Python, PHP) to a running application bundled with all the dependencies.
+
+It creates all the necessary Build Configs, deployment configs and even automatically exposes the application on a route.
+
+Our example is based on a very simple Ruby application hosted on the internal gogs server.
+
+    oc new-project s2i-userXY
+    oc new-app -h
+    oc new-app ruby:2.5~http://gogs.apps.0xshift.dev/ocpadmin/ruby-ex.git
+    oc status
+
+
+Explore the different resources created by the new-app command.
+
+
+## Binary build
 
 This example describes how to deploy a web archive (war) in Wildfly using the OpenShift client (oc) in binary mode.
 The example is inspired by APPUiO blog: <http://docs.appuio.ch/en/latest/app/wildflybinarydeployment.html>
 
-## Create a new project
+### Create a new project
 
 ```bash
 oc new-project binary-build-userXY
 ```
 
-## Create the deployment folder structure
+### Create the deployment folder structure
 
 Prepare a temporary folder and create the deployment folder structure inside.
 
@@ -19,10 +46,10 @@ One or more war can be placed in the deployments folder. In this example an exis
 mkdir tmp-bin
 cd tmp-bin
 mkdir deployments
-wget -O deployments/ROOT.war 'https://gogs.apps.0x2shift.dev/openshift/techlab/blob/master/data/hello-world-war-1.0.0.war?raw=true'
+wget -O deployments/ROOT.war http://gogs.apps.0xshift.dev/ocpadmin/techlab/raw/master/data/hello-world-war-1.0.0.war
 ```
 
-## Create a new build using the Wildfly image
+### Create a new build using the Wildfly image
 
 The flag *binary=true* indicates that this build will use the binary content instead of the url to the source code.
 
@@ -76,7 +103,7 @@ The parameter _--from-dir=._ tells the oc tool which directory to upload.
 
 The _--follow_ flag will show the build log on the console and wait until the build is finished.
 
-## Create a new app
+### Create a new app
 
 ```bash
 oc new-app hello-world -l app=hello-world
@@ -87,10 +114,32 @@ See the command output for the created resources.
 Check the created resources with the oc tool and inside the web console.
 Try to find out, if the wildfly has started.
 
-## Expose the service as route
+### Expose the service as route
 
 ```bash
 oc expose svc hello-world
 ```
 
 Inside the web console click onto the route to see the output of the hello-world application.
+
+## Container Build
+
+We can also create arbitrary contrainers based on Dockerfiles.
+
+Command:
+
+```
+oc new-project docker-build-userXY
+oc new-build --strategy=docker http://gogs.apps.0xshift.dev/ocpadmin/httpd.git
+```
+
+Follow how the build goes and if the image will be present in your registry.
+
+Create an app with that image and expose it:
+
+```
+oc new-app httpd -l app=httpd
+oc expose svc httpd
+```
+
+Now let's try to add an easter egg in /egg.txt with a new build.
