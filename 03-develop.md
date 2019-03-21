@@ -20,9 +20,11 @@ $ oc new-project develop-userXY
 `oc new-project` wechselt automatisch in das eben neu angelegte Projekt. Mit dem `oc get` Command können Ressourcen von einem bestimmten Typ angezeigt werden.
 
 Verwenden Sie
+
 ```
 $ oc get project
 ```
+
 um alle Projekte anzuzeigen, auf die Sie berechtigt sind.
 
 Sobald das neue Projekt erstellt wurde, können wir in OpenShift mit dem folgenden Befehl das Docker Image deployen:
@@ -30,7 +32,9 @@ Sobald das neue Projekt erstellt wurde, können wir in OpenShift mit dem folgend
 ```
 $ oc new-app appuio/example-spring-boot
 ```
+
 Output:
+
 ```
 --> Found Docker image e355426 (3 months old) from Docker Hub for "appuio/example-spring-boot"
 
@@ -51,7 +55,6 @@ Output:
     service "example-spring-boot" created
 --> Success
     Run 'oc status' to view your app.
-
 ```
 
 Für unser Lab verwenden wir ein APPUiO-Beispiel (Java Spring Boot Applikation):
@@ -74,9 +77,7 @@ Je nach Internetverbindung oder abhängig davon, ob das Image auf Ihrem OpenShif
 3. Klicken Sie auf Applications
 4. Wählen Sie Pods aus
 
-
 **Tipp** Um Ihre eigenen Docker Images für OpenShift zu erstellen, sollten Sie die folgenden Best Practices befolgen: https://docs.openshift.com/container-platform/3.11/creating_images/guidelines.html
-
 
 ## Betrachten der erstellten Ressourcen
 
@@ -278,7 +279,7 @@ example-spring-boot   172.30.124.20   <none>        8080/TCP   11m
 Und nun wollen wir diesen Service veröffentlichen / exposen:
 
 ```
-$ oc expose service example-spring-boot
+oc create route edge --service=example-spring-boot
 ```
 
 Per default wird eine http Route erstellt.
@@ -297,7 +298,6 @@ Die Applikation ist nun vom Internet her über den angegebenen Hostnamen erreich
 
 In der Overview der Web Console ist diese Route mit dem Hostnamen jetzt auch sichtbar.
 
-
 ---
 
 # Pod Scaling, Readiness Probe und Self Healing
@@ -306,22 +306,10 @@ In diesem Lab zeigen wir auf, wie man Applikationen in OpenShift skaliert. Des W
 
 ## Example Applikation hochskalieren
 
-Dafür erstellen wir ein neues Projekt
+Dafür verwenden wir das vorherige Projekt
 
 ```
-$ oc new-project scale-userXY
-```
-
-und fügen dem Projekt eine Applikation hinzu
-
-```
-$ oc new-app appuio/example-php-docker-helloworld --name=appuio-php-docker
-```
-
-und stellen den Service zur Verfügung (expose)
-
-```
-$ oc expose service appuio-php-docker
+$ oc project develop-userXY
 ```
 
 Wenn wir unsere Example Applikation skalieren wollen, müssen wir unserem ReplicationController (rc) mitteilen, dass wir bspw. stets 3 Replicas des Images am Laufen haben wollen.
@@ -330,15 +318,14 @@ Schauen wir uns mal den ReplicationController (rc) etwas genauer an:
 
 ```
 $ oc get rc
-
-NAME                  DESIRED   CURRENT   AGE
-appuio-php-docker-1   1         1         33s
+NAME                    DESIRED   CURRENT   READY     AGE
+example-spring-boot-1   1         1         1         33s
 ```
 
 Für mehr Details:
 
 ```
-$ oc get rc appuio-php-docker-1 -o json
+oc get rc example-spring-boot-1 -o json
 ```
 
 Der rc sagt uns, wieviele Pods wir erwarten (spec) und wieviele aktuell deployt sind (status).
@@ -347,44 +334,44 @@ Der rc sagt uns, wieviele Pods wir erwarten (spec) und wieviele aktuell deployt 
 Nun skalieren wir unsere Example Applikation auf 3 Replicas:
 
 ```
-$ oc scale --replicas=3 dc appuio-php-docker
+$ oc scale --replicas=3 dc example-spring-boot
 ```
 
 Überprüfen wir die Anzahl Replicas auf dem ReplicationController:
 
-```
+```bash
 $ oc get rc
-
-NAME                  DESIRED   CURRENT   AGE
-appuio-php-docker-1   3         3         1m
-
+NAME                    DESIRED   CURRENT   READY     AGE
+example-spring-boot-4   3         3         3         16m
 ```
 
 und zeigen entsprechend die Pods an:
 
-```
+```bash
 $ oc get pods
-NAME                        READY     STATUS    RESTARTS   AGE
-appuio-php-docker-1-2uc89   1/1       Running   0          21s
-appuio-php-docker-1-evcre   1/1       Running   0          21s
-appuio-php-docker-1-tolpx   1/1       Running   0          2m
-
+NAME                          READY     STATUS    RESTARTS   AGE
+example-spring-boot-4-fqh9n   1/1       Running   0          1m
+example-spring-boot-4-tznqp   1/1       Running   0          16m
+example-spring-boot-4-vdhqc   1/1       Running   0          1m
 ```
 
 Zum Schluss schauen wir uns den Service an. Der sollte jetzt alle drei Endpoints referenzieren:
-```
-$ oc describe svc appuio-php-docker
-Name:      appuio-php-docker
-Namespace:    techlab-scale
-Labels:      app=appuio-php-docker
-Selector:    app=appuio-php-docker,deploymentconfig=appuio-php-docker
-Type:      ClusterIP
-IP:        172.30.166.88
-Port:      8080-tcp  8080/TCP
-Endpoints:    10.1.3.23:8080,10.1.4.13:8080,10.1.5.15:8080
-Session Affinity:  None
-No events.
 
+```bash
+$ oc describe svc example-spring-boot
+Name:              example-spring-boot
+Labels:            app=example-spring-boot
+Selector:          app=example-spring-boot,deploymentconfig=example-spring-boot
+Type:              ClusterIP
+IP:                172.30.14.18
+Port:              8080-tcp  8080/TCP
+TargetPort:        8080/TCP
+Endpoints:         10.129.6.30:8080,10.130.2.33:8080,10.131.2.17:8080
+Port:              9000-tcp  9000/TCP
+TargetPort:        9000/TCP
+Endpoints:         10.129.6.30:9000,10.130.2.33:9000,10.131.2.17:9000
+Session Affinity:  None
+Events:            <none>
 ```
 
 Skalieren von Pods innerhalb eines Services ist sehr schnell, da OpenShift einfach eine neue Instanz des Docker Images als Container startet.
@@ -402,84 +389,68 @@ Ersetzen Sie dafür `[route]` mit Ihrer definierten Route:
 
 **Tipp:** oc get route
 
-```
-while true; do sleep 1; curl -s http://[route]/pod/; date "+ TIME: %H:%M:%S,%3N"; done
+```bash
+while true; do sleep 1; curl -s https://[route]/pod/; date "+ TIME: %H:%M:%S,%3N"; done
 ```
 
 und skalieren Sie von **3** Replicas auf **1**.
 Der Output zeigt jeweils den Pod an, der den Request verarbeitete:
 
+```bash
+Pod: example-spring-boot-4-tznqp TIME: 15:07:51,162
+Pod: example-spring-boot-4-vdhqc TIME: 15:07:52,516
+Pod: example-spring-boot-4-fqh9n TIME: 15:07:53,904
+Pod: example-spring-boot-4-tznqp TIME: 15:07:55,319
+Pod: example-spring-boot-4-vdhqc TIME: 15:07:56,670
+Pod: example-spring-boot-4-fqh9n TIME: 15:07:58,308
+Pod: example-spring-boot-4-vdhqc TIME: 15:07:59,666
+Pod: example-spring-boot-4-tznqp TIME: 15:08:01,032
+Pod: example-spring-boot-4-tznqp TIME: 15:08:02,454
+Pod: example-spring-boot-4-fqh9n TIME: 15:08:03,814
+Pod: example-spring-boot-4-fqh9n TIME: 15:08:05,193
+Pod: example-spring-boot-4-vdhqc TIME: 15:08:06,547
 ```
-POD: appuio-php-docker-6-9w9t4 TIME: 16:40:04,991
-POD: appuio-php-docker-6-9w9t4 TIME: 16:40:06,053
-POD: appuio-php-docker-6-6xg2b TIME: 16:40:07,091
-POD: appuio-php-docker-6-6xg2b TIME: 16:40:08,128
-POD: appuio-php-docker-6-ctbrs TIME: 16:40:09,175
-POD: appuio-php-docker-6-ctbrs TIME: 16:40:10,212
-POD: appuio-php-docker-6-9w9t4 TIME: 16:40:11,279
-POD: appuio-php-docker-6-9w9t4 TIME: 16:40:12,332
-POD: appuio-php-docker-6-6xg2b TIME: 16:40:13,369
-POD: appuio-php-docker-6-6xg2b TIME: 16:40:14,407
-POD: appuio-php-docker-6-6xg2b TIME: 16:40:15,441
-POD: appuio-php-docker-6-6xg2b TIME: 16:40:16,493
-POD: appuio-php-docker-6-6xg2b TIME: 16:40:17,543
-POD: appuio-php-docker-6-6xg2b TIME: 16:40:18,591
-```
+
 Die Requests werden an die unterschiedlichen Pods geleitet, sobald man runterskaliert auf einen Pod, gibt dann nur noch einer Antwort
 
 Was passiert nun, wenn wir nun während dem der While Befehl oben läuft, ein neues Deployment starten:
 
 ```
-$ oc rollout latest appuio-php-docker
-```
-Währen einer kurzen Zeit gibt die öffentliche Route keine Antwort
-```
-POD: appuio-php-docker-6-6xg2b TIME: 16:42:17,743
-POD: appuio-php-docker-6-6xg2b TIME: 16:42:18,776
-POD: appuio-php-docker-6-6xg2b TIME: 16:42:19,813
-POD: appuio-php-docker-6-6xg2b TIME: 16:42:20,853
-POD: appuio-php-docker-6-6xg2b TIME: 16:42:21,891
-POD: appuio-php-docker-6-6xg2b TIME: 16:42:22,943
-POD: appuio-php-docker-6-6xg2b TIME: 16:42:23,980
-# keine Antwort
-POD: appuio-php-docker-7-pxnr3 TIME: 16:42:42,134
-POD: appuio-php-docker-7-pxnr3 TIME: 16:42:43,181
-POD: appuio-php-docker-7-pxnr3 TIME: 16:42:44,226
-POD: appuio-php-docker-7-pxnr3 TIME: 16:42:45,259
-POD: appuio-php-docker-7-pxnr3 TIME: 16:42:46,297
-POD: appuio-php-docker-7-pxnr3 TIME: 16:42:47,571
-POD: appuio-php-docker-7-pxnr3 TIME: 16:42:48,606
-POD: appuio-php-docker-7-pxnr3 TIME: 16:42:49,645
-POD: appuio-php-docker-7-pxnr3 TIME: 16:42:50,684
+$ oc rollout latest example-spring-boot
 ```
 
-In unserem Beispiel verwenden wir einen sehr leichtgewichtigen Pod. Das Verhalten ist ausgeprägter, wenn der Container länger braucht bis er Requests abarbeiten kann. Bspw. Java Applikation.
+Währen einiger Zeit gibt die öffentliche Route keine Antwort
 
-```
-Pod: example-spring-boot-2-73aln TIME: 16:48:25,251
-Pod: example-spring-boot-2-73aln TIME: 16:48:26,305
-Pod: example-spring-boot-2-73aln TIME: 16:48:27,400
-Pod: example-spring-boot-2-73aln TIME: 16:48:28,463
-Pod: example-spring-boot-2-73aln TIME: 16:48:29,507
-<html><body><h1>503 Service Unavailable</h1>
-No server is available to handle this request.
-</body></html>
- TIME: 16:48:33,562
-<html><body><h1>503 Service Unavailable</h1>
-No server is available to handle this request.
-</body></html>
- TIME: 16:48:34,601
- ...
-Pod: example-spring-boot-3-tjdkj TIME: 16:49:20,114
-Pod: example-spring-boot-3-tjdkj TIME: 16:49:21,181
-Pod: example-spring-boot-3-tjdkj TIME: 16:49:22,231
+```bash
+Pod: example-spring-boot-5-rv9qs TIME: 16:13:44,938
+Pod: example-spring-boot-5-rv9qs TIME: 16:13:46,258
+Pod: example-spring-boot-5-rv9qs TIME: 16:13:47,567
+Pod: example-spring-boot-5-rv9qs TIME: 16:13:48,875
 
+<html>
+
+...
+
+  <body>
+    <div>
+      <h1>Application is not available</h1>
+
+...
+
+</html>
+ TIME: 16:14:10,287
+Pod: example-spring-boot-6-q99dq TIME: 16:14:11,825
+Pod: example-spring-boot-6-q99dq TIME: 16:14:13,132
+Pod: example-spring-boot-6-q99dq TIME: 16:14:14,428
+Pod: example-spring-boot-6-q99dq TIME: 16:14:15,726
+Pod: example-spring-boot-6-q99dq TIME: 16:14:17,064
+Pod: example-spring-boot-6-q99dq TIME: 16:14:18,362
+Pod: example-spring-boot-6-q99dq TIME: 16:14:19,655
 ```
 
 Es kann dann sogar sein, dass der Service gar nicht mehr online ist und der Routing Layer ein **503 Error** zurück gibt.
 
 Im Folgenden Kapitel wird beschrieben, wie Sie Ihre Services konfigurieren können, dass unterbruchsfreie Deployments möglich werden.
-
 
 ## Unterbruchsfreies Deployment mittels Readiness Probe und Rolling Update
 
@@ -495,7 +466,8 @@ Grundsätzlich gibt es zwei Checks, die implementiert werden können:
 Diese beiden Checks können als HTTP Check, Container Execution Check (Shell Script im Container) oder als TCP Socket Check implementiert werden.
 
 In unserem Beispiel soll die Applikation der Plattform sagen, ob sie bereit für Requests ist. Dafür verwenden wir die Readiness Probe. Unsere Beispielapplikation gibt auf der folgenden URL auf Port 9000 (Management-Port der Spring Applikation) ein Status Code 200 zurück, sobald die Applikation bereit ist.
-```
+
+```bash
 http://[route]/health/
 ```
 
@@ -506,7 +478,8 @@ In der Deployment Config (dc) definieren im Abschnitt der Rolling Update Strateg
 Dies kann in der Deployment Config (dc) konfiguriert werden:
 
 **YAML:**
-```
+
+```yaml
 ...
 spec:
   strategy:
@@ -523,15 +496,17 @@ spec:
 
 Die Deployment Config kann via Web Console oder direkt über `oc` editiert werden.
 ```
-$ oc edit dc appuio-php-docker
+$ oc edit dc example-spring-boot
 ```
 
 Oder im JSON-Format editieren:
 ```
-$ oc edit dc appuio-php-docker -o json
+$ oc edit dc example-spring-boot -o json
 ```
+
 **json**
-```
+
+```json
 "strategy": {
     "type": "Rolling",
     "rollingParams": {
@@ -543,7 +518,22 @@ $ oc edit dc appuio-php-docker -o json
     },
     "resources": {}
 }
+```
 
+Für die Probes braucht es den Maintenance Port (9000).
+
+Dazu den Port in der Deployment Config (dc) hinzugefügt werden, falls er noch nicht drin ist. Dies unter:
+
+spec --> template --> spec --> containers --> ports:
+
+```yaml
+...
+        name: example-spring-boot
+        ports:
+...
+        - containerPort: 9000
+          protocol: TCP
+...
 ```
 
 Die Readiness Probe muss in der Deployment Config (dc) hinzugefügt werden, und zwar unter:
@@ -552,27 +542,28 @@ spec --> template --> spec --> containers unter halb von `resources: {  }`
 
 **YAML:**
 
-```
+```yaml
 ...
-          resources: {  }
-          readinessProbe:
-            httpGet:
-              path: /health/
-              port: 8080
-              scheme: HTTP
-            initialDelaySeconds: 10
-            timeoutSeconds: 1
+        resources: {  }
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 9000
+            scheme: HTTP
+          initialDelaySeconds: 10
+          timeoutSeconds: 1
 ...
 ```
 
 **json:**
-```
+
+```json
 ...
                         "resources": {},
                         "readinessProbe": {
                             "httpGet": {
-                                "path": "/health/",
-                                "port": 8080,
+                                "path": "/health",
+                                "port": 9000,
                                 "scheme": "HTTP"
                             },
                             "initialDelaySeconds": 10,
@@ -583,22 +574,36 @@ spec --> template --> spec --> containers unter halb von `resources: {  }`
 
 Passen Sie das entsprechend analog oben an.
 
+**Webconsole**
+
+Die Readiness Probe kann auch in der Webconsole konfiguriert werden:
+
+1. Application -> Deployments -> example-spring-boot
+1. Oben rechts beim _Actions_ Button _Edit Health Checks_ auswählen: Add Readiness Probe
+1. Port 900 auswählen
+1. Pfad: /health
+
+
 Die Konfiguration unter Container muss dann wie folgt aussehen:
+
 **YAML:**
-```
+
+```yaml
       containers:
-        -
-          name: example-php-docker-helloworld
-          image: 'appuio/example-php-docker-helloworld@sha256:6a19d4a1d868163a402709c02af548c80635797f77f25c0c391b9ce8cf9a56cf'
-          ports:
+      - image: appuio/example-spring-boot@sha256:f5336f4bdc3037269174b93f3731698216f1cc6276ea26b0429a137e943f1413
+        imagePullPolicy: Always
+        name: example-spring-boot
+        ports:
             -
               containerPort: 8080
+              protocol: TCP
+              containerPort: 9000
               protocol: TCP
           resources: {  }
           readinessProbe:
             httpGet:
-              path: /health/
-              port: 8080
+              path: /health
+              port: 9000
               scheme: HTTP
             initialDelaySeconds: 10
             timeoutSeconds: 1
@@ -607,22 +612,30 @@ Die Konfiguration unter Container muss dann wie folgt aussehen:
 ```
 
 **json:**
-```
+
+```json
+
+
                 "containers": [
                     {
-                        "name": "appuio-php-docker",
-                        "image": "appuio/example-php-docker-helloworld@sha256:9e927f9d6b453f6c58292cbe79f08f5e3db06ac8f0420e22bfd50c750898c455",
+                        "image": "appuio/example-spring-boot@sha256:f5336f4bdc3037269174b93f3731698216f1cc6276ea26b0429a137e943f1413",
+                        "imagePullPolicy": "Always",
+                        "name": "example-spring-boot",
                         "ports": [
                             {
                                 "containerPort": 8080,
+                                "protocol": "TCP"
+                            },
+                            {
+                                "containerPort": 9000,
                                 "protocol": "TCP"
                             }
                         ],
                         "resources": {},
                         "readinessProbe": {
                             "httpGet": {
-                                "path": "/health/",
-                                "port": 8080,
+                                "path": "/health",
+                                "port": 9000,
                                 "scheme": "HTTP"
                             },
                             "initialDelaySeconds": 10,
@@ -634,19 +647,20 @@ Die Konfiguration unter Container muss dann wie folgt aussehen:
                 ],
 ```
 
-
 Verifizieren Sie während eines Deployment der Applikation, ob nun auch ein Update der Applikation unterbruchsfrei verläuft:
 
 Einmal pro Sekunde ein Request:
-```
+
+```bash
 while true; do sleep 1; curl -s http://[route]/pod/; date "+ TIME: %H:%M:%S,%3N"; done
 ```
 
 Starten des Deployments:
-```
-$ oc rollout latest appuio-php-docker
-```
 
+```bash
+$ oc rollout latest example-spring-boot
+deploymentconfig.apps.openshift.io/example-spring-boot rolled out
+```
 
 ## Self Healing
 
@@ -655,15 +669,20 @@ $ oc rollout latest appuio-php-docker
 Suchen Sie mittels `oc get pods` einen Pod im Status "running" aus, den Sie *killen* können.
 
 Starten sie in einem eigenen Terminal den folgenden Befehl (anzeige der Änderungen an Pods)
+
 ```
 oc get pods -w
 ```
+
 Löschen Sie im anderen Terminal einen Pod mit folgendem Befehl
+
 ```
-oc delete pod appuio-php-docker-3-788j5
+oc delete pod example-spring-boot-10-d8dkz
 ```
 
 OpenShift sorgt dafür, dass wieder **n** Replicas des genannten Pods laufen.
+
+In der Webconsole ist gut zu Beobachten, wie der Pod zuerst hellblau ist, bis die Applikation auf der Readiness Probe mit 0K antwortet.
 
 # Datenbank anbinden
 
