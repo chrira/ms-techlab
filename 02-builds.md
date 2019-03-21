@@ -63,7 +63,7 @@ Command with output:
 
 ```bash
 $ oc new-build --docker-image=openshift/wildfly-160-centos7 --binary=true --name=hello-world -l app=hello-world
---> Found Docker image 5c7681e (19 hours old) from Docker Hub for "openshift/wildfly-160-centos7"
+--> Found Docker image 5b42148 (5 days old) from Docker Hub for "openshift/wildfly-160-centos7"
 
     WildFly 16.0.0.Final 
     -------------------- 
@@ -117,18 +117,18 @@ Try to find out, if the wildfly has started.
 ### Expose the service as route
 
 ```bash
-oc expose svc hello-world
+oc create route edge --service=hello-world
 ```
 
 Inside the web console click onto the route to see the output of the hello-world application.
 
 ## Container Build
 
-We can also create arbitrary contrainers based on Dockerfiles.
+We can also create arbitrary containers based on Dockerfiles.
 
 Command:
 
-```
+```bash
 oc new-project docker-build-userXY
 oc new-build --strategy=docker http://gogs.apps.0xshift.dev/ocpadmin/httpd.git
 ```
@@ -137,7 +137,7 @@ Follow how the build goes and if the image will be present in your registry.
 
 Create an app with that image and expose it:
 
-```
+```bash
 oc new-app httpd -l app=httpd
 oc expose svc httpd
 ```
