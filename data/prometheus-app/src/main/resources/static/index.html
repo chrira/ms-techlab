@@ -1,0 +1,195 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<title>Cloud Native Meetup Voter</title>
+<link rel="icon" type="image/png" sizes="192x192"  href="/images/android-icon-192x192.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="96x96" href="/images/favicon-96x96.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+<link rel="stylesheet" href="https://unpkg.com/wingcss"/>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/latest/css/font-awesome.min.css">
+<link rel="stylesheet" href="/css/fontawesome-stars.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="/javascript/jquery.barrating.min.js"></script>
+<script>
+$(document).ready(function(){
+  $('#stars').barrating('show', {
+  theme: 'fontawesome-stars',
+  onSelect: function(value, text, event) {
+    if (typeof(event) !== 'undefined') {
+       $.post("/api/stars/"+value, null,
+          function(data,status){
+           loadClicks();
+          });
+    } 
+  }
+});
+
+
+  $(".voter").click(function(){
+     var voter = $(this).data("voter");
+     $(this).toggleClass("active");
+     if($(this).hasClass("active")){
+        $.post("/api/up/"+voter, null,
+          function(data,status){
+           loadClicks();
+          });
+     }else{
+        $.post("/api/down/"+voter, null,
+          function(data,status){
+           loadClicks();
+          });
+     }
+  });
+  
+  $(".add").click(function(){
+     $(this).text("done");
+     $(this).toggleClass("active");
+     $(this).toggleClass("pointer");
+     var voter = $("#inputadditional").val();
+     $.post("/api/up/"+voter, null,
+          function(data,status){
+           loadClicks();
+          });
+     $(this).unbind( "click" );
+  });
+  
+  $("#up").click(function(){
+    if(!$(this).hasClass("active")){
+      $(this).toggleClass("active");
+      $("#down").removeClass("active");
+      $.post("/api/up/apero", null,
+      function(data,status){
+        //loadClicks();
+      });
+    }
+  });
+  $("#down").click(function(){
+    if(!$(this).hasClass("active")){
+      $(this).toggleClass("active");
+      $("#up").removeClass("active");
+      $.post("/api/down/apero", null,
+      function(data,status){
+        //loadClicks();
+      });
+    }
+  });
+});
+
+function loadClicks(){
+  $.get( "/api", function( data ) {
+
+});
+}
+</script>
+<style>
+.largerFont{
+   font-size: 1.5em;
+}
+.xlargerFont{
+   font-size: 2em;
+}
+.largebuttons{
+   font-size: 5em;
+}
+.result{
+   font-size: 3em;
+}
+.pointer{
+	cursor: pointer;
+}
+.active{
+	color: #76c4d3;
+}
+.br-widget  a{
+    font-size: 48px !important;
+}
+.br-theme-fontawesome-stars .br-widget a.br-selected::after {
+    color: #76c4d3;
+}
+.br-theme-fontawesome-stars .br-widget a.br-active::after {
+    color: #76c4d3;
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+	<div class="row">
+      <div class="col center"><img alt="logo" src="/images/cloud-native-computing-meetup-bern-logo.jpg"/></div>
+    </div>
+	<div class="row">
+      <div class="col center"><h1 id="clicker">Themen für das nächste Meetup? </h1></div>
+    </div>
+    <div class="row">
+      <div class="col"><h3>Traffic</h3><p><strong>Networking, Service Discovery, Load Balancing, Service Mesh, RPC, Pubsub</strong><br/> Envoy, Linkerd, NATS, gRPC, CoreDNS, CNI
+      </p></div>
+      <div class="col center"><i class="material-icons xlargerFont pointer voter" data-voter="Traffic">thumb_up</i></div>
+    </div>
+    <div class="row">
+      <div class="col"><h3>Governance</h3><p><strong>Security, Auth, Authorization, Auditing, Policy Enforcement, Compliance, GDPR, Cost Management</strong><br/>SPIFFE, SPIRE, Open Policy Agent, Notary, TUF,  Falco,</p></div>
+      <div class="col center"><i class="material-icons xlargerFont pointer voter" data-voter="Governance">thumb_up</i></div>
+    </div>
+    <div class="row">
+      <div class="col"><h3>App Dev, Ops & Testing</h3><p><strong>PaaS, Serverless, Operators, CI/CD,  Conformance, Chaos Eng, Scalability and Reliability measurement etc.</strong><br/> Helm, CloudEvents, Telepresence, Buildpacks, (CNCF CI)</p></div>
+      <div class="col center"><i class="material-icons xlargerFont pointer voter" data-voter="App Dev, Ops & Testing">thumb_up</i></div>
+    </div>
+    <div class="row">
+      <div class="col"><h3>Core and Applied Architectures</h3><p><strong>Orchestration, Scheduling, Container runtimes, Sandboxing Technologies, Packaging and Distribution, Specialized architectures thereof (e.g. Edge, IoT, Big Data, AI/ML, etc)</strong><br/> Kubernetes, containerd, rkt, Harbor, Dragonfly, Virtual Kubelet</p></div>
+      <div class="col center"><i class="material-icons xlargerFont pointer voter" data-voter="Core and Applied Architectures">thumb_up</i></div>
+    </div>
+    <div class="row">
+      <div class="col"><h3>Storage</h3><p><strong>Block and File Stores, Databases, Key-Value stores etc. </strong><br/> TiKV, etcd, Vitess, Rook</p></div>
+      <div class="col center"><i class="material-icons xlargerFont pointer voter" data-voter="Storage">thumb_up</i></div>
+    </div>
+    <div class="row">
+      <div class="col"><h3>High Performance Computing</h3><p>Machine Learning and Artificial Intelligence</p></div>
+      <div class="col center"><i class="material-icons xlargerFont pointer voter" data-voter="High Performance Computing">thumb_up</i></div>
+    </div>
+    <div class="row">
+      <div class="col"><h3>Self-Service</h3><p>Developer Experience, Self-Service Lösungen </p></div>
+      <div class="col center"><i class="material-icons xlargerFont pointer voter" data-voter="Self-Service">thumb_up</i></div>
+    </div>
+    <div class="row">
+      <div class="col"><h3>Weitere Themen</h3></div>
+      <div class="col center"></div>
+    </div>
+    <div class="row">
+      <div class="col"><input type="text" name="fname" id="inputadditional"></div>
+      <div class="col center"><i class="material-icons xlargerFont pointer add">add</i></div>
+    </div>
+    
+    <div class="row">
+      <div class="col center"><h1>Wie hat Dir das Meetup gefallen? </h1></div>
+    </div>
+    <div class="row">
+      <div class="col center">
+        <select id="stars">
+          <option value="1">1</option>
+          <option value="2">2</option>
+          <option value="3">3</option>
+          <option value="4">4</option>
+          <option value="5">5</option>
+        </select>
+      </div>
+    </div>
+    
+    <div class="row">
+      <div class="col center"><h1>Wer freut sich aufs Apéro?</h1></div>
+    </div>
+    <div class="row">
+      <div class="col center"><i id="up" class="material-icons largebuttons pointer" data-voter="apero">thumb_up</i></div>
+      <div class="col center"><i id="down" class="material-icons largebuttons pointer" data-voter="apero">thumb_down</i></div>
+    </div>
+    <div class="row">
+      <div class="col center">
+        <p>Prometheus Actuator Endpoint: <a href="/actuator/prometheus">/actuator/prometheus</a><br/>
+        Source Code: <a target="_new" href="https://github.com/phil-pona/cloud-native-computing-meetup-bern">https://github.com/phil-pona/cloud-native-computing-meetup-bern</a><br/>
+        </p></div>
+    </div>
+</div>
+</body>
+</html>
