@@ -23,6 +23,7 @@ scrape_configs:
     - targets: ['localhost:9090']
 
   # Scrape configuration for our hello world app
-  - job_name: 'myapp'
+  - job_name: 'prometheus-app'
+    metrics_path: '/actuator/prometheus'
     static_configs:
-    - targets: ['myapp:8080']
+    - targets: ['prometheus-app:8080']
