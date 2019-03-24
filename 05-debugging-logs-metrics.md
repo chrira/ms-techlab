@@ -101,19 +101,16 @@ Unter folgendem Link sind weiterführende Informationen zu Port Forwarding zu fi
 
 ## Autoscaling
 
-In diesem Beispiel werden wir eine Applikation automatisierte hoch und runter skalieren, je nach dem unter wieviel Last die Applikation steht.
+In diesem Beispiel werden wir eine Applikation automatisierte hoch und runter skalieren, je nach dem unter wieviel Last die Applikation steht. Dazu verwenden wir unsere alt bekannte Springboot App
 
 ```
-oc new-project autoscale-userXY
-oc new-app openshift/wildfly-160-centos7~https://github.com/fmarchioni/ocpdemos --context-dir=wildfly-basic --name=wildfly-basic
+oc project develop-userXY
 ```
-
-Warten sie bis die Applikation gebaut und ready ist. Sie können dem Build, wie auch der vorhandenden Pods folgend.
 
 Nun definieren wir ein Set an Limiten für unsere Applikation, die für einen einzelnen Pod gültigkeit haben:
 
 ```
-oc edit dc wildfily-basic
+oc edit dc example-spring-boot
 ```
 
 Folgende Resource Limiten fügen wir dem Container hinzu:
@@ -125,26 +122,28 @@ Folgende Resource Limiten fügen wir dem Container hinzu:
             memory: "1Gi"
 ```
 
-Die resourcen sind ursprünglich leer: `resources: {}`
+Die resourcen sind ursprünglich leer: `resources: {}`. Achtung die `resources` müssen auf dem Container und nicht dem Deployment definiert werden.
 
 Dies wird unser Deployment neu ausrollen und die Limiten enforcen.
 
 Sobald unser neuer Container läuft können wir nun den autoscaler konfigurieren:
 
 ```
-oc autoscale dc wildfly-basic --min 1 --max 3 --cpu-percent=25
+oc autoscale dc example-spring-boot --min 1 --max 3 --cpu-percent=25
 ```
 
 Nun können wir auf dem Service Last erzeugen:
 
 ```
-for i in {1..500}; do curl -s  http://wildfly-basic-autoscale-userxy.apps.0xshift.dev > /dev/null ; done;
+for i in {1..500}; do curl -s  https://example-spring-boot-develop-userxy.apps.0xshift.dev > /dev/null ; done;
 ```
 
 Die aktuellen Werte können wir über:
 
 ```
-oc get horizontalpodautoscaler.autoscaling/wildfly-basic
+oc get horizontalpodautoscaler.autoscaling/example-spring-boot
 ```
 
 abrufen. Sobald wir die Last beenden wird die Anzahl Pods nach einer gewissen Zeit automatisch wieder herunter skaliert.
+
+Gegebenfalls muss etwas mit den Werten gespielt werden um realistische Szenarien zu bekommen.
