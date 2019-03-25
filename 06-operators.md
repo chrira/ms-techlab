@@ -34,7 +34,7 @@ You can also subscribe to the operator through the Console.
 
 You can see the running operator:
 
-```
+```bash
 oc get pods
 ```
 
@@ -64,7 +64,7 @@ oc get service
 
 Describing the configured CRD gives us more information about the deployment:
 
-```
+```bash
 oc describe EtcdCluster example-etcd-cluster
 ```
 

@@ -13,6 +13,7 @@ Laufende Container werden als unveränderbare Infrastruktur behandelt und sollen
 Mit OpenShift können Remote Shells in die Pods geöffnet werden ohne dass man darin vorgängig SSH installieren müsste. Dafür steht einem der Befehl `oc rsh` zur Verfügung.
 
 Wählen Sie mittels `oc get pods` einen Pod aus und führen Sie den folgenden Befehl aus:
+
 ```
 $ oc rsh [POD]
 ```
@@ -41,7 +42,6 @@ Einzelne Befehle innerhalb des Containers können über `oc exec` ausgeführt we
 $ oc exec [POD] env
 ```
 
-
 ```bash
 $ oc exec example-spring-boot-4-8mbwe env
 PATH=/opt/app-root/src/bin:/opt/app-root/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
@@ -62,11 +62,11 @@ Die Logfiles zu einem Pod können sowohl in der Web Console als auch auch im CLI
 $ oc logs [POD]
 ```
 
-Der Parameter `-f` bewirkt analoges Verhalten wie `tail -f`
+Der Parameter `-f` bewirkt analoges Verhalten wie `tail -f`.
 
 Befindet sich ein Pod im Status **CrashLoopBackOff** bedeutet dies, dass er auch nach wiederholtem Restarten nicht erfolgreich gestartet werden konnte. Die Logfiles können auch wenn der Pod nicht läuft mit dem folgenden Befehl angezeigt werden.
 
- ```
+```
 $ oc logs -p [POD]
 ```
 
@@ -99,7 +99,6 @@ Unter folgendem Link sind weiterführende Informationen zu Port Forwarding zu fi
 
 **Note:** Der `oc port-forward`-Prozess wird solange weiterlaufen, bis er vom User abgebrochen wird. Sobald das Port-Forwarding also nicht mehr benötigt wird, kann er mit ctrl+c gestoppt werden.
 
-
 ## Autoscaling
 
 In diesem Beispiel werden wir eine Applikation automatisierte hoch und runter skalieren, je nach dem unter wieviel Last die Applikation steht. Dazu verwenden wir unsere alt bekannte Springboot App
@@ -118,7 +117,7 @@ oc edit dc example-spring-boot
 
 Folgende Resource Limiten fügen wir dem Container hinzu:
 
-```
+```yaml
         resources:
           limits:
             cpu: "0.3"
