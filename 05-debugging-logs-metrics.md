@@ -42,7 +42,7 @@ $ oc exec [POD] env
 ```
 
 
-```
+```bash
 $ oc exec example-spring-boot-4-8mbwe env
 PATH=/opt/app-root/src/bin:/opt/app-root/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 HOSTNAME=example-spring-boot-4-8mbwe
@@ -61,6 +61,7 @@ Die Logfiles zu einem Pod können sowohl in der Web Console als auch auch im CLI
 ```
 $ oc logs [POD]
 ```
+
 Der Parameter `-f` bewirkt analoges Verhalten wie `tail -f`
 
 Befindet sich ein Pod im Status **CrashLoopBackOff** bedeutet dies, dass er auch nach wiederholtem Restarten nicht erfolgreich gestartet werden konnte. Die Logfiles können auch wenn der Pod nicht läuft mit dem folgenden Befehl angezeigt werden.
@@ -77,7 +78,7 @@ Kibana ist über den Link "View Archive" im Web-UI bei den Logs des Pods erreich
 
 Die OpenShift Platform integriert auch ein Grundset an Metriken, welche einerseits im WebUI integriert werden und anderseits auch dazu genutzt werden um Pods automatisch horizontal zu skalieren.
 
-Sie können mit Hilfe eines direkten Logins auf einen Pod nun den Reosurcen verbrauch dieses Pods beieinflussen und die Auswirkungen dazu im WebUI beobachten.
+Sie können mit Hilfe eines direkten Logins auf einen Pod nun den Ressourcenverbrauch dieses Pods beeinflussen und die Auswirkungen dazu im WebUI beobachten.
 
 ## Aufgabe: Port Forwarding
 
@@ -107,6 +108,8 @@ In diesem Beispiel werden wir eine Applikation automatisierte hoch und runter sk
 oc project develop-userXY
 ```
 
+Warten sie bis die Applikation gebaut und ready ist. Sie können dem Build, wie auch der vorhandenden Pods folgend.
+
 Nun definieren wir ein Set an Limiten für unsere Applikation, die für einen einzelnen Pod gültigkeit haben:
 
 ```
@@ -122,7 +125,7 @@ Folgende Resource Limiten fügen wir dem Container hinzu:
             memory: "1Gi"
 ```
 
-Die resourcen sind ursprünglich leer: `resources: {}`. Achtung die `resources` müssen auf dem Container und nicht dem Deployment definiert werden.
+Die Ressourcen sind ursprünglich leer: `resources: {}`. Achtung die `resources` müssen auf dem Container und nicht dem Deployment definiert werden.
 
 Dies wird unser Deployment neu ausrollen und die Limiten enforcen.
 
