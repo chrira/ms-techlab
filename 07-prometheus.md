@@ -95,16 +95,14 @@ metadata:
     prometheus.io/port: "8080"
 ```
 
-### Reload Prometheus config
+## get custom metrics
 
-Kill Prometheus pod. It will reload the configuration.
+Go inside the Prometheus Graph tab to see the custom metrics of the prometheus-app.
 
-```bash
-oc delete pod prom-0 --grace-period=0 --force
-```
+Select the metric for _meetup_thumbs_up_count_total_.
 
-saver way for prod:
+Click on Execute and see the Graph and Console.
 
-```bash
-oc exec prom-0 -c prometheus -- curl -X POST http://localhost:9090/-/reload
-```
+Click on the thumbs-up icons inside the prometheus-app. Reload the page and give some more thumbs-up.
+
+You should then see the new count of the metric.
