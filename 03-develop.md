@@ -710,7 +710,7 @@ Um dasselbe Ergebnis zu erhalten müssen lediglich Datenbankname, Username, Pass
 ```
 $ oc get templates
 $ oc get templates -n openshift
-$ oc process --parameters mysql-persistent
+$ oc process --parameters mysql-persistent -n openshift
 $ oc get -n openshift template mysql-persistent -o yaml > mysql-persistent.yml
 $ oc process -pMYSQL_USER=techlab -pMYSQL_PASSWORD=techlab -pMYSQL_DATABASE=techlab -f mysql-persistent.yml | oc create -f -
 ```
