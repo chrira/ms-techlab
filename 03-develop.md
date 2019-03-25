@@ -580,7 +580,7 @@ Die Readiness Probe kann auch in der Webconsole konfiguriert werden:
 
 1. Application -> Deployments -> example-spring-boot
 1. Oben rechts beim _Actions_ Button _Edit Health Checks_ auswählen: Add Readiness Probe
-1. Port 900 auswählen
+1. Port 9000 auswählen
 1. Pfad: /health
 
 
@@ -871,7 +871,7 @@ $ oc set env dc example-spring-boot \
           },
           {
               "name": "SPRING_DATASOURCE_URL",
-              "value": "jdbc:mysql://techlab/appuio"
+              "value": "jdbc:mysql://mysql/techlab?autoReconnect=true"
           }
       ],
 ...
