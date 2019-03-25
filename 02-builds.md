@@ -139,7 +139,7 @@ Create an app with that image and expose it:
 
 ```bash
 oc new-app httpd -l app=httpd
-oc expose svc httpd
+oc create route edge --service=httpd
 ```
 
 Now let's try to add an easter egg in /egg.txt with a new build.
