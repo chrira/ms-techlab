@@ -49,7 +49,9 @@ You can see the running operator:
 oc get pods
 ```
 
-Once this is done, you are able to deploy a cluster, by using a crd:
+Once this is done, you are able to deploy a cluster, by using a crd.
+
+You can do this by creating a file called `etcd-cluster.yaml` with the following content:
 
 ```yaml
 # etcd-cluster.yaml
