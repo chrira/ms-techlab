@@ -30,6 +30,15 @@ spec:
   channel: alpha
 ```
 
+
+```bash
+oc create etcd-subscription.yaml
+``` 
+
+```bash
+oc get pods
+```
+
 You can also subscribe to the operator through the Console.
 
 You can see the running operator:
