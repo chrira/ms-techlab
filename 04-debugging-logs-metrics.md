@@ -151,7 +151,7 @@ oc autoscale dc ruby-ex --min 1 --max 3 --cpu-percent=25
 Nun können wir auf dem Service Last erzeugen:
 
 ```bash
-for i in {1..500}; do curl -s  https:/ruby-ex-autoscale-userxy.apps.0xshift.dev/load ; done;
+for i in {1..500}; do curl -s  https://ruby-ex-autoscale-userXY.apps.0xshift.dev/load ; done;
 ```
 
 Die aktuellen Werte können wir über:
