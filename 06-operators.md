@@ -14,7 +14,7 @@ Create project:
 oc new-project operator-userXY
 ```
 
-Subscribe to the etcd operator:
+Subscribe to the etcd operator, by creating a file called `etcd-subscription.yaml` with the following content:
 
 ```yaml
 # etcd-subscription.yaml
@@ -29,6 +29,8 @@ spec:
   startingCSV: etcdoperator.v0.9.2
   channel: alpha
 ```
+
+Now subscribe using the file:
 
 
 ```bash
