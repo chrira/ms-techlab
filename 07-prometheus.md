@@ -106,3 +106,9 @@ Click on Execute and see the Graph and Console.
 Click on the thumbs-up icons inside the prometheus-app. Reload the page and give some more thumbs-up.
 
 You should then see the new count of the metric.
+
+## Scale up
+
+Scale the prometheus-app up to multiple pods.
+
+Do you find the new pods inside Prometheus?
