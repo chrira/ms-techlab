@@ -41,7 +41,7 @@ oc create -f etcd-subscription.yaml
 oc get pods
 ```
 
-You can also subscribe to the operator through the Console.
+You can also subscribe to the operator through the Console, though not all integration might be ready, due to being technical preview by default.
 
 You can see the running operator:
 
