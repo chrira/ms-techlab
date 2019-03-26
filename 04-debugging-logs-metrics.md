@@ -117,6 +117,7 @@ Auf dem Branch load gibt es einen CPU intensiven Endpunkt, welchen wir für unse
 ```bash
 oc new-app openshift/ruby:2.5~http://gogs.apps.0xshift.dev/ocpadmin/ruby-ex.git#load
 oc create route edge --insecure-policy=Redirect --service=ruby-ex
+```
 
 Warten sie bis die Applikation gebaut und ready ist und erste Metriken auftauchen. Sie können dem Build, wie auch den vorhandenden Pods folgen.
 
@@ -124,7 +125,7 @@ Bis die ersten Metriken auftauchen dauert es eine Weile, erst dann wird der Auto
 
 Nun definieren wir ein Set an Limiten für unsere Applikation, die für einen einzelnen Pod gültigkeit haben:
 
-```
+```bash
 oc edit dc ruby-ex
 ```
 
@@ -143,13 +144,13 @@ Dies wird unser Deployment neu ausrollen und die Limiten enforcen.
 
 Sobald unser neuer Container läuft können wir nun den autoscaler konfigurieren:
 
-```
+```bash
 oc autoscale dc ruby-ex --min 1 --max 3 --cpu-percent=25
 ```
 
 Nun können wir auf dem Service Last erzeugen:
 
-```
+```bash
 for i in {1..500}; do curl -s  https:/ruby-ex-autoscale-userxy.apps.0xshift.dev/load ; done;
 ```
 
