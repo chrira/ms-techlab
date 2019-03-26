@@ -49,7 +49,7 @@ You will need to log in with your OpenShift user.
 
 ### Graph tab
 
-Select as an example the metric for _process_cpu_seconds_total_
+Select as an example the metric for `process_cpu_seconds_total`
 
 Click on Execute and see the Graph and Console.
 
@@ -99,7 +99,7 @@ metadata:
 
 Go inside the Prometheus Graph tab to see the custom metrics of the prometheus-app.
 
-Select the metric for _meetup_thumbs_up_count_total_.
+Select the metric for `meetup_thumbs_up_count_total`.
 
 Click on Execute and see the Graph and Console.
 
