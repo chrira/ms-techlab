@@ -23,6 +23,7 @@ kind: Subscription
 metadata:
   generateName: etcd-
   namespace: operator-userXY
+  name: etcd
 spec:
   source: rh-operators
   name: etcd
