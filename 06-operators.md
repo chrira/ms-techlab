@@ -32,7 +32,7 @@ spec:
 
 
 ```bash
-oc create etcd-subscription.yaml
+oc create -f etcd-subscription.yaml
 ``` 
 
 ```bash
