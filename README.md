@@ -8,8 +8,8 @@
 
 ## Day 2
 
-* [Coolstore Environemnt](04-coolstore.md)
-* [Debugging / Logging / Metrics](05-debugging-logs-metrics.md)
+* [Debugging / Logging / Metrics](04-debugging-logs-metrics.md)
+* [Coolstore Environemnt](05-coolstore.md)
 * [Operators](06-operators.md)
 * [Application Monitoring](07-prometheus.md)
 
