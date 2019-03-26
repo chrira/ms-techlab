@@ -22,7 +22,7 @@ apiVersion: operators.coreos.com/v1alpha1
 kind: Subscription
 metadata:
   generateName: etcd-
-  namespace: operator-gogs
+  namespace: operator-userXY
 spec:
   source: rh-operators
   name: etcd
