@@ -103,3 +103,7 @@ sum(rate(http_server_requests_total{app="prometheus-app"}[5m])) by (code,path)
 Scale the prometheus-app up to multiple pods.
 
 Do you find the new pods inside Prometheus? Can you graph by return code and pod, so you can figure out which pods has the main issues?
+
+## Bonus
+
+Remember the spring boot app also had metrics available. Can you deploy this app again in our prometheus project and scrape this endpoint as well?
