@@ -9,4 +9,5 @@
 ## Day 2
 
 * [Pipelines](08-pipelines.md)
-* [Prometheus]
+* [Prometheus](07-prometheus.md)
+* [Debugging / Autoscaling](09-debugging-autoscaling.md)
