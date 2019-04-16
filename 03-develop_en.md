@@ -209,65 +209,66 @@ Under Endpoints you will now find the current Pod.
 
 
 ### ImageStream
-[ImageStreams](https://docs.openshift.com/container-platform/3.11/architecture/core_concepts/builds_and_image_streams.html#image-streams) werden dafür verwendet, automatische Tasks auszuführen wie bspw. ein Deployment zu aktualisieren, wenn eine neue Version des Images oder des Basisimages verfügbar ist.
+[ImageStreams](https://docs.openshift.com/container-platform/3.11/architecture/core_concepts/builds_and_image_streams.html#image-streams) are used to perform automatic tasks such as updating a deployment when a new version of the image or base image is available.
 
-Builds und Deployments können Image Streams beobachten und auf Änderungen entsprechend reagieren. In unserem Beispiel wird der Image Stream dafür verwendet, ein Deployment zu triggern, sobald etwas am Image geändert hat.
+Builds and deployments can monitor image streams and respond to changes accordingly. In our example, the image stream is used to trigger a deployment once something has changed the image.
 
-Mit dem folgenden Befehl können Sie zusätzliche Informationen über den Image Stream auslesen:
+With the following command you can get additional information about the image stream:
 ```
 $ oc get imagestream example-spring-boot -o json
 ```
 
 ### DeploymentConfig
 
-In der [DeploymentConfig](https://docs.openshift.com/container-platform/3.11/dev_guide/deployments/how_deployments_work.html) werden folgende Punkte definiert:
+In the [DeploymentConfig](https://docs.openshift.com/container-platform/3.11/dev_guide/deployments/how_deployments_work.html) the following points are defined:
 
-- Update Strategy: wie werden Applikationsupdates ausgeführt, wie erfolgt das Austauschen der Container?
-- Triggers: Welche Triggers führen zu einem Deployment? In unserem Beispiel ImageChange
-- Container
-  - Welches Image soll deployed werden?
-  - Environment Configuration für die Pods
+- Update Strategy: how are application updates executed, how are containers exchanged?
+- Triggers: Which triggers lead to a deployment? In our example ImageChange
+- container
+  - What image should be deployed?
+  - Environment Configuration for the Pods
   - ImagePullPolicy
-- Replicas, Anzahl der Pods, die deployt werden sollen
+- Replicas, number of pods to be deployed
 
 
-Mit dem folgenden Befehl können zusätzliche Informationen zur DeploymentConfig ausgelesen werden:
+The following command can be used to read additional information about DeploymentConfig:
 ```
-$ oc get deploymentConfig example-spring-boot -o json
+$ oc get deploymentConfig example spring boat -o json
 ```
 
-Im Gegensatz zur DeploymentConfig, mit welcher man OpenShift sagt, wie eine Applikation deployt werden soll, definiert man mit dem ReplicationController, wie die Applikation während der Laufzeit aussehen soll (bspw. dass immer 3 Replicas laufen sollen).
+In contrast to DeploymentConfig, which tells OpenShift how an application should be deployed, the ReplicationController defines how the application should behave during runtime (e.g. that 3 replicas should always run).
 
-**Tipp:** für jeden Resource Type gibt es auch eine Kurzform. So können Sie bspw. `oc get deploymentconfig` auch einfach als `oc get dc` schreiben.
+**Tip:** for each resource type there is also a short form. For example, you can write `oc get deploymentconfig` as `oc get dc`.
 
-# Unseren Service mittels Route online verfügbar machen
+# Make our service available online via route
 
-In diesem Lab werden wir die Applikation von vorher über **https** vom Internet her erreichbar machen.
+In this lab we will make the application accessible from Internet via **https**.
 
-## Routen
 
-Der `oc new-app` Befehl aus dem vorherigen Lab erstellt keine Route. Somit ist unser Service von *aussen* her gar nicht erreichbar. Will man einen Service verfügbar machen, muss dafür eine Route eingerichtet werden. Der OpenShift Router erkennt aufgrund des Host Headers auf welchen Service ein Request geleitet werden muss.
+## Routes
 
-Aktuell werden folgende Protokolle unterstützt:
+`oc new-app` command from the previous Lab does not create a route. So our service is not reachable from *outside* at all. If you want to make a service available, you have to set up a route for it. The OpenShift Router recognizes which service a request has to be routed to based on the host header.
+
+Currently the following protocols are supported:
 
 - HTTP
 - HTTPS ([SNI](https://en.wikipedia.org/wiki/Server_Name_Indication))
-- WebSockets
-- TLS mit [SNI](https://en.wikipedia.org/wiki/Server_Name_Indication)
+- web sockets
+- TLS with [SNI](https://en.wikipedia.org/wiki/Server_Name_Indication)
 
-## Aufgabe
+## Task
 
-Vergewissern Sie sich, dass Sie sich im Projekt `develop-userXY` befinden. **Tipp:** `oc project develop-userXY`
+Make sure that you are in the project `develop-userXY`. **Tip:** `oc project develop-userXY`
 
-Erstellen Sie für den Service `example-spring-boot` eine Route und machen Sie ihn darüber öffentlich verfügbar.
+Create a route for the `example-spring-boot` service and make it publicly available.
 
-**Tipp:** Mittels `oc get routes` können Sie sich die Routen eines Projekts anzeigen lassen.
+**Tip:** With `oc get routes` you can display the routes of a project.
 
 ```
 $ oc get routes
 ```
 
-Aktuell gibt es noch keine Route. Jetzt brauchen wir den Servicenamen:
+Currently there is no route. Now we need the service name:
 
 ```
 $ oc get services
@@ -275,15 +276,15 @@ NAME                  CLUSTER-IP      EXTERNAL-IP   PORT(S)    AGE
 example-spring-boot   172.30.124.20   <none>        8080/TCP   11m
 ```
 
-Und nun wollen wir diesen Service veröffentlichen / exposen:
+And now we want to publish / expose this service:
 
 ```
 oc create route edge --service=example-spring-boot
 ```
 
-Per default wird eine http Route erstellt.
+By default, an http route is created.
 
-Mittels `oc get routes` können wir überprüfen, ob die Route angelegt wurde.
+With `oc get routes` we can check if the route has been created.
 
 ```
 $ oc get routes
@@ -291,29 +292,29 @@ NAME                  HOST/PORT                                   PATH      SERV
 example-spring-boot   example-spring-boot-techlab.mycluster.com             example-spring-boot:8080-tcp                 app=example-spring-boot
 ```
 
-Die Applikation ist nun vom Internet her über den angegebenen Hostnamen erreichbar, Sie können also nun auf die Applikation zugreifen.
+The application is now accessible from the Internet via the specified host name, so you can now access the application.
 
-**Tipp:** Wird kein Hostname angegeben wird der Standardname verwendet: *servicename-project.osecluster*
+**Tip:** If no hostname is specified, the default name is used: *servicename-project.osecluster*
 
-In der Overview der Web Console ist diese Route mit dem Hostnamen jetzt auch sichtbar.
+In the Web Console Overview, this route with the host name is now also visible.
 
 ---
 
-# Pod Scaling, Readiness Probe und Self Healing
+# Pod Scaling, Readiness Probe and Self Healing
 
-In diesem Lab zeigen wir auf, wie man Applikationen in OpenShift skaliert. Des Weiteren zeigen wir, wie OpenShift dafür sorgt, dass jeweils die Anzahl erwarteter Pods gestartet wird und wie eine Applikation der Plattform zurückmelden kann, dass sie bereit für Requests ist.
+In this lab we show you how to scale applications in OpenShift. Furthermore, we show how OpenShift ensures that the number of expected pods is started and how an application can report back to the platform that it is ready for requests.
 
-## Example Applikation hochskalieren
+## Upscale Example Application
 
-Dafür verwenden wir das vorherige Projekt
+For this we use the previous project
 
 ```
 $ oc project develop-userXY
 ```
 
-Wenn wir unsere Example Applikation skalieren wollen, müssen wir unserem ReplicationController (rc) mitteilen, dass wir bspw. stets 3 Replicas des Images am Laufen haben wollen.
+If we want to scale our example application, we have to tell our replication controller (rc) that we always want 3 replicas of the image to work.
 
-Schauen wir uns mal den ReplicationController (rc) etwas genauer an:
+Let's take a closer look at the ReplicationController (rc):
 
 ```
 $ oc get rc
@@ -321,22 +322,22 @@ NAME                    DESIRED   CURRENT   READY     AGE
 example-spring-boot-1   1         1         1         33s
 ```
 
-Für mehr Details:
+For more details:
 
 ```
 oc get rc example-spring-boot-1 -o json
 ```
 
-Der rc sagt uns, wieviele Pods wir erwarten (spec) und wieviele aktuell deployt sind (status).
+The rc tells us how many pods we expect (spec) and how many are currently deployed (status).
 
-## Aufgabe: skalieren unserer Beispiel Applikation
-Nun skalieren wir unsere Example Applikation auf 3 Replicas:
+## Task: scale our example application
+Now we scale our Example application to 3 replicas:
 
 ```
 $ oc scale --replicas=3 dc example-spring-boot
 ```
 
-Überprüfen wir die Anzahl Replicas auf dem ReplicationController:
+Let's check the number of replicas on the ReplicationController:
 
 ```bash
 $ oc get rc
@@ -344,7 +345,7 @@ NAME                    DESIRED   CURRENT   READY     AGE
 example-spring-boot-4   3         3         3         16m
 ```
 
-und zeigen entsprechend die Pods an:
+and display the pods accordingly:
 
 ```bash
 $ oc get pods
@@ -354,7 +355,7 @@ example-spring-boot-4-tznqp   1/1       Running   0          16m
 example-spring-boot-4-vdhqc   1/1       Running   0          1m
 ```
 
-Zum Schluss schauen wir uns den Service an. Der sollte jetzt alle drei Endpoints referenzieren:
+Finally, we take a look at the service. It should now reference all three endpoints:
 
 ```bash
 $ oc describe svc example-spring-boot
@@ -373,27 +374,27 @@ Session Affinity:  None
 Events:            <none>
 ```
 
-Skalieren von Pods innerhalb eines Services ist sehr schnell, da OpenShift einfach eine neue Instanz des Docker Images als Container startet.
+Scaling pods within a service is very fast because OpenShift simply starts a new instance of the Docker image as a container.
 
-**Tipp:** OpenShift unterstützt auch Autoscaling, die Dokumentation dazu ist unter dem folgenden Link zu finden: https://docs.openshift.com/container-platform/3.11/dev_guide/pod_autoscaling.html - Wir werden uns damit später noch detailierter beschäftigen.
+**Tip:** OpenShift also supports autoscaling, the documentation can be found at the following link: https://docs.openshift.com/container-platform/3.11/dev_guide/pod_autoscaling.html - We will deal with this in more detail later.
 
-## Aufgabe: skalierte App in der Web Console
+## Task: scaled app in the web console
 
-Schauen Sie sich die skalierte Applikation auch in der Web Console an.
+Take a look at the scaled application in the Web Console.
 
-## Unterbruchsfreies Skalieren überprüfen
+## Check uninterrupted scaling
 
-Mit dem folgenden Befehl können Sie nun überprüfen, ob Ihr Service verfügbar ist, während Sie hoch und runter skalieren.
-Ersetzen Sie dafür `[route]` mit Ihrer definierten Route:
+With the following command you can now check if your service is available as you scale up and down.
+Replace `[route]` with your defined route:
 
-**Tipp:** oc get route
+**Tip:** oc get route
 
 ```bash
 while true; do sleep 1; curl -s https://[route]/pod/; date "+ TIME: %H:%M:%S,%3N"; done
 ```
 
-und skalieren Sie von **3** Replicas auf **1**.
-Der Output zeigt jeweils den Pod an, der den Request verarbeitete:
+and scale from **3**** replicas to **1****.
+The output shows the Pod that processed the request:
 
 ```bash
 Pod: example-spring-boot-4-tznqp TIME: 15:07:51,162
@@ -410,15 +411,15 @@ Pod: example-spring-boot-4-fqh9n TIME: 15:08:05,193
 Pod: example-spring-boot-4-vdhqc TIME: 15:08:06,547
 ```
 
-Die Requests werden an die unterschiedlichen Pods geleitet, sobald man runterskaliert auf einen Pod, gibt dann nur noch einer Antwort
+The requests will be forwarded to the different pods, as soon as you scale down to a pod, you will get only one response
 
-Was passiert nun, wenn wir nun während dem der While Befehl oben läuft, ein neues Deployment starten:
+What happens now when we start a new deployment while the While command is running above?
 
 ```
 $ oc rollout latest example-spring-boot
 ```
 
-Währen einiger Zeit gibt die öffentliche Route keine Antwort
+For some time the public route gives no answer
 
 ```bash
 Pod: example-spring-boot-5-rv9qs TIME: 16:13:44,938
@@ -447,34 +448,34 @@ Pod: example-spring-boot-6-q99dq TIME: 16:14:18,362
 Pod: example-spring-boot-6-q99dq TIME: 16:14:19,655
 ```
 
-Es kann dann sogar sein, dass der Service gar nicht mehr online ist und der Routing Layer ein **503 Error** zurück gibt.
+It may even happen that the service is no longer online and the routing layer returns a **503 error**.
 
-Im Folgenden Kapitel wird beschrieben, wie Sie Ihre Services konfigurieren können, dass unterbruchsfreie Deployments möglich werden.
+The following chapter describes how to configure your services to allow interruption-free deployments.
 
-## Unterbruchsfreies Deployment mittels Readiness Probe und Rolling Update
+## Uninterrupted deployment using Readiness Probe and Rolling Update
 
-Die Update Strategie [Rolling](https://docs.openshift.com/container-platform/3.11/dev_guide/deployments/deployment_strategies.html#rolling-strategy) ermöglicht unterbruchsfreie Deployments. Damit wird die neue Version der Applikation gestartet, sobald die Applikation bereit ist, werden Request auf den neuen Pod geleitet und die alte Version undeployed.
+The update strategy [Rolling](https://docs.openshift.com/container-platform/3.11/dev_guide/deployments/deployment_strategies.html#rolling-strategy) allows interruption-free deployments. This will launch the new version of the application, as soon as the application is ready, Request will be routed to the new Pod and the old version undeployed.
 
-Zusätzlich kann mittels [Container Health Checks](https://docs.openshift.com/container-platform/3.11/dev_guide/application_health.html) die deployte Applikation der Plattform detailliertes Feedback über ihr aktuelles Befinden geben.
+In addition, the deployed application can give the platform detailed feedback about its current state via [Container Health Checks](https://docs.openshift.com/container-platform/3.11/dev_guide/application_health.html).
 
-Grundsätzlich gibt es zwei Checks, die implementiert werden können:
+Basically, there are two checks that can be implemented:
 
-- Liveness Probe, sagt aus, ob ein laufender Container immer noch sauber läuft.
-- Readiness Probe, gibt Feedback darüber, ob eine Applikation bereit ist, um Requests zu empfangen. Ist v.a. im Rolling Update relevant.
+- Liveness Probe, indicates whether a running container is still running cleanly.
+- Readiness Probe, gives feedback on whether an application is ready to receive requests. Is particularly relevant in the rolling update.
 
-Diese beiden Checks können als HTTP Check, Container Execution Check (Shell Script im Container) oder als TCP Socket Check implementiert werden.
+These two checks can be implemented as HTTP Check, Container Execution Check (Shell Script in Container) or TCP Socket Check.
 
-In unserem Beispiel soll die Applikation der Plattform sagen, ob sie bereit für Requests ist. Dafür verwenden wir die Readiness Probe. Unsere Beispielapplikation gibt auf der folgenden URL auf Port 9000 (Management-Port der Spring Applikation) ein Status Code 200 zurück, sobald die Applikation bereit ist.
+In our example, the application of the platform should tell if it is ready for requests. For this we use the Readiness Probe. Our example application returns a status code 200 on the following URL on port 9000 (management port of the Spring application) as soon as the application is ready.
 
 ```bash
-http://[route]/health/
+curl http://[route]/health/
 ```
 
-## Aufgabe
+## Task
 
-In der Deployment Config (dc) definieren im Abschnitt der Rolling Update Strategie, dass bei einem Update die App immer verfügbar sein soll: `maxUnavailable: 0%`
+In the Deployment Config (dc) section of the Rolling Update Strategy, define that the app should always be available during an update: `maxUnavailable: 0%`.
 
-Dies kann in der Deployment Config (dc) konfiguriert werden:
+This can be configured in the Deployment Config (dc):
 
 **YAML:**
 
@@ -493,12 +494,12 @@ spec:
 ...
 ```
 
-Die Deployment Config kann via Web Console oder direkt über `oc` editiert werden.
+The Deployment Config can be edited via Web Console or directly via `oc`.
 ```
 $ oc edit dc example-spring-boot
 ```
 
-Oder im JSON-Format editieren:
+Or edit in JSON format:
 ```
 $ oc edit dc example-spring-boot -o json
 ```
@@ -519,9 +520,9 @@ $ oc edit dc example-spring-boot -o json
 }
 ```
 
-Für die Probes braucht es den Maintenance Port (9000).
+For the probes you need the Maintenance Port (9000).
 
-Dazu den Port in der Deployment Config (dc) hinzugefügt werden, falls er noch nicht drin ist. Dies unter:
+To do this, add the port in the Deployment Config (dc) if it is not already there. This under:
 
 spec --> template --> spec --> containers --> ports:
 
@@ -537,7 +538,7 @@ spec --> template --> spec --> containers --> ports:
 
 Die Readiness Probe muss in der Deployment Config (dc) hinzugefügt werden, und zwar unter:
 
-spec --> template --> spec --> containers unter halb von `resources: {  }`
+spec --> template --> spec --> spec --> Container unter halb von `Ressourcen: { }`
 
 **YAML:**
 
