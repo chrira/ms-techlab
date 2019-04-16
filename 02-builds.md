@@ -12,18 +12,23 @@ Let's have a look at the different kinds of builds
 
 Simplest way of getting started from a code base (e.g. Ruby, Python, PHP) to a running application bundled with all the dependencies.
 
-It creates all the necessary Build Configs, deployment configs and even automatically exposes the application on a route.
+It creates all the necessary Build Configs, deployment configs and even automatically creates the service.
 
 Our example is based on a very simple Ruby application hosted on the internal gogs server.
 
     oc new-project s2i-userXY
     oc new-app -h
-    oc new-app ruby:2.5~http://gogs.apps.0xshift.dev/ocpadmin/ruby-ex.git
+    oc new-app ruby:2.5~http://gogs.apps.zurich-XYZ.openshiftworkshop.com/ocpadmin/ruby-ex.git
     oc status
 
 
 Explore the different resources created by the new-app command.
 
+To access the built and deployed application we must expose it as a route. We can do that by issuing the following command:
+
+    oc create route edge --service=ruby-ex
+
+By describing the route, we can get the URL that serves your built ruby application. Access it through your browser. You find the URL as well in the web console. Inspect your application there as well.
 
 ## Binary build
 
@@ -46,7 +51,7 @@ One or more war can be placed in the deployments folder. In this example an exis
 mkdir tmp-bin
 cd tmp-bin
 mkdir deployments
-wget -O deployments/ROOT.war http://gogs.apps.0xshift.dev/ocpadmin/techlab/raw/master/data/hello-world-war-1.0.0.war
+wget -O deployments/ROOT.war http://gogs.apps.zurich-XYZ.openshiftworkshop.com/ocpadmin/techlab/raw/master/data/hello-world-war-1.0.0.war
 ```
 
 ### Create a new build using the Wildfly image
@@ -130,7 +135,7 @@ Command:
 
 ```bash
 oc new-project docker-build-userXY
-oc new-build --strategy=docker http://gogs.apps.0xshift.dev/ocpadmin/httpd.git
+oc new-build --strategy=docker http://gogs.apps.zurich-XYZ.openshiftworkshop.com/ocpadmin/httpd.git
 ```
 
 Follow how the build goes and if the image will be present in your registry.
@@ -142,4 +147,4 @@ oc new-app httpd -l app=httpd
 oc create route edge --service=httpd
 ```
 
-Now let's try to add an easter egg in /egg.txt with a new build.
+Now let's try to add an easter egg in /egg.txt with a new build. How would you do this and where should it be done?
