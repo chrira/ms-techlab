@@ -1,33 +1,32 @@
 # Develop Application
 
-In diesem Lab werden wir gemeinsam das erste "pre-built" Docker Image deployen und die OpenShift-Konzepte Pod, Service, DeploymentConfig und ImageStream etwas genauer anschauen.
-
+In this lab we will deploy the first "pre-built" Docker Image and take a closer look at the OpenShift concepts Pod, Service, DeploymentConfig and ImageStream.
 
 ## Aufgabe
 
-Nachdem wir im vorher den Source-to-Image Workflow, wie auch ein Binary und Docker Build verwendet haben, um eine Applikation auf OpenShift zu deployen, wenden wir uns nun dem Deployen eines pre-built Docker Images von Docker Hub oder einer anderen Docker-Registry zu.
+After using the Source-to-Image workflow as well as a binary and docker build to deploy an application to OpenShift, we will now deploy a pre-built docker image from DockerHub or another docker registry.
 
-> [Weiterführende Dokumentation](https://docs.openshift.com/container-platform/3.11/dev_guide/application_lifecycle/new_app.html#specifying-an-image)
+> [Further Documentation](https://docs.openshift.com/container-platform/3.11/dev_guide/application_lifecycle/new_app.html#specifying-an-image)
 
-Als ersten Schritt erstellen wir dafür ein neues Projekt. Ein Projekt ist eine Gruppierung von Ressourcen (Container und Docker Images, Pods, Services, Routen, Konfiguration, Quotas, Limiten und weiteres). Für das Projekt berechtigte User können diese Ressourcen verwalten. Innerhalb eines OpenShift Clusters muss der Name eines Projektes eindeutig sein.
+As a first step we create a new project. A project is a grouping of resources (container and docker images, pods, services, routes, configuration, quotas, limits and more). Users authorized for the project can manage these resources. Within an OpenShift cluster, the name of a project must be unique.
 
-Erstellen Sie daher ein neues Projekt mit dem Namen `develop-userXY`:
+Therefore, create a new project with the name `develop-userXY`:
 
 ```
 $ oc new-project develop-userXY
 ```
 
-`oc new-project` wechselt automatisch in das eben neu angelegte Projekt. Mit dem `oc get` Command können Ressourcen von einem bestimmten Typ angezeigt werden.
+`oc new-project` automatically changes to the newly created project. With `oc get` command, resources of a certain type can be displayed.
 
-Verwenden Sie
+Use
 
 ```
 $ oc get project
 ```
 
-um alle Projekte anzuzeigen, auf die Sie berechtigt sind.
+to list all the projects you have access to.
 
-Sobald das neue Projekt erstellt wurde, können wir in OpenShift mit dem folgenden Befehl das Docker Image deployen:
+Once the new project has been created, we can deploy the Docker image in OpenShift with the following command:
 
 ```
 $ oc new-app appuio/example-spring-boot
@@ -57,31 +56,31 @@ Output:
     Run 'oc status' to view your app.
 ```
 
-Für unser Lab verwenden wir ein APPUiO-Beispiel (Java Spring Boot Applikation):
+For our lab we use an APPUiO example(Java Spring Boot Application):
 - Docker Hub: https://hub.docker.com/r/appuio/example-spring-boot/
 - GitHub (Source): https://github.com/appuio/example-spring-boot-helloworld
 
-OpenShift legt die nötigen Ressourcen an, lädt das Docker Image in diesem Fall von Docker Hub herunter und deployt anschliessend den ensprechenden Pod.
+OpenShift creates the necessary resources, downloads the Docker image from Docker Hub and deploys the corresponding Pod.
 
-**Tipp:** Verwenden Sie `oc status` um sich einen Überblick über das Projekt zu verschaffen.
+**Tipp:** Use `oc status` to get an overview of current project.
 
-Oder verwenden Sie den `oc get` Befehl mit dem `-w` Parameter, um fortlaufend Änderungen an den Ressourcen des Typs Pod anzuzeigen (abbrechen mit ctrl+c):
+Alternatively, use `oc get` command with `-w` Parameter, to see ongoing changes of resources with type pod (cancel with ctrl+c):
 ```
 $ oc get pods -w
 ```
 
-Je nach Internetverbindung oder abhängig davon, ob das Image auf Ihrem OpenShift Node bereits heruntergeladen wurde, kann das eine Weile dauern. Schauen Sie sich doch in der Web Console den aktuellen Status des Deployments an:
+Depending on your internet connection or whether the image on your OpenShift Node has already been downloaded, this may take a while. Check the current status of the deployment in the Web Console:
 
-1. Loggen Sie sich in der Web Console ein
-2. Wählen Sie Ihr Projekt `develop-userXY` aus
-3. Klicken Sie auf Applications
-4. Wählen Sie Pods aus
+1. Log in to the Web Console
+2. Select your project `develop-userXY`.
+3. Click on Applications
+4. Select Pods
 
-**Tipp** Um Ihre eigenen Docker Images für OpenShift zu erstellen, sollten Sie die folgenden Best Practices befolgen: https://docs.openshift.com/container-platform/3.11/creating_images/guidelines.html
+**Tip** To create your own Docker Images for OpenShift, you should follow these best practices: https://docs.openshift.com/container-platform/3.11/creating_images/guidelines.html
 
-## Betrachten der erstellten Ressourcen
+## Viewing the created resources
 
-Als wir `oc new-app appuio/example-spring-boot` vorhin ausführten, hat OpenShift im Hintergrund einige Ressourcen für uns angelegt. Die werden dafür benötigt, dieses Docker Image zu deployen:
+When we were running `oc new-app appuio/example-spring-boot` earlier, OpenShift created some resources for us in the background. They are needed to deploy this Docker image:
 
 - [Service](https://docs.openshift.com/container-platform/3.11/architecture/core_concepts/pods_and_services.html#services)
 - [ImageStream](https://docs.openshift.com/container-platform/3.11/architecture/core_concepts/builds_and_image_streams.html#image-streams)
@@ -89,13 +88,13 @@ Als wir `oc new-app appuio/example-spring-boot` vorhin ausführten, hat OpenShif
 
 ### Service
 
-[Services](https://docs.openshift.com/container-platform/3.11/architecture/core_concepts/pods_and_services.html#services) dienen innerhalb OpenShift als Abstraktionslayer, Einstiegspunkt und Proxy/Loadbalancer auf die dahinterliegenden Pods. Der Service ermöglicht es, innerhalb OpenShift eine Gruppe von Pods des gleichen Typs zu finden und anzusprechen.
+[Services](https://docs.openshift.com/container-platform/3.11/architecture/core_concepts/pods_and_services.html#services) serve within OpenShift as an abstraction layer, entry point and proxy/load balancer to the underlying pods. The service makes it possible to find and address a group of pods of the same type within OpenShift.
 
-Als Beispiel: Wenn eine Applikationsinstanz unseres Beispiels die Last nicht mehr alleine verarbeiten kann, können wir die Applikation bspw. auf drei Pods hochskalieren. OpenShift mapt diese als Endpoints automatisch zum Service. Sobald die Pods bereit sind, werden Requests automatisch auf alle drei Pods verteilt.
+As an example: If an application instance in our example can no longer handle the load alone, we can upscale the application to three pods, for example. OpenShift automatically maps these as endpoints to the service. As soon as the pods are ready, requests are automatically distributed to all three pods.
 
-**Note:** Die Applikation kann aktuell von aussen noch nicht erreicht werden, der Service ist ein OpenShift-internes Konzept. Im folgenden Lab werden wir die Applikation öffentlich verfügbar machen.
+**Note:** The application cannot yet be reached from the outside, the service is an OpenShift internal concept. In the following lab we will make the application publicly available.
 
-Nun schauen wir uns unseren Service mal etwas genauer an:
+Now let's take a closer look at our service:
 
 ```
 $ oc get services
@@ -106,11 +105,11 @@ NAME                  CLUSTER-IP      EXTERNAL-IP   PORT(S)    AGE
 example-spring-boot   172.30.124.20   <none>        8080/TCP   2m
 ```
 
-Wie Sie am Output sehen, ist unser Service (example-spring-boot) über eine IP und Port erreichbar (172.30.124.20:8080) **Note:** Ihre IP kann unterschiedlich sein.
+As you can see from the output, our service (example-spring-boot) is reachable via an IP and port (172.30.124.20:8080) **Note:** Your IP can be different.
 
-**Note:** Service IPs bleiben während ihrer Lebensdauer immer gleich.
+**Note:** Service IPs always remain the same during their lifetime.
 
-Mit dem folgenden Befehl können Sie zusätzliche Informationen über den Service auslesen:
+You can use the following command to read additional information about the service:
 ```
 $ oc get service example-spring-boot -o json
 ```
@@ -157,14 +156,14 @@ $ oc get service example-spring-boot -o json
 }
 ```
 
-Mit dem entsprechenden Befehl können Sie auch die Details zu einem Pod anzeigen:
+You can also use the appropriate command to view the details of a Pod:
 ```
 $ oc get pod example-spring-boot-3-nwzku -o json
 ```
 
-**Note:** Zuerst den pod Namen aus Ihrem Projekt abfragen (`oc get pods`) und im oberen Befehl ersetzen.
+**Note:** First get the pod name from your project (`oc get pods`) and replace it in the upper command.
 
-Über den `selector` Bereich im Service wird definiert, welche Pods (`labels`) als Endpoints dienen. Dazu können die entsprechenden Konfigurationen von Service und Pod zusammen betrachtet werden.
+The `selector` area in the service defines which pods (`labels`) serve as endpoints. The corresponding configurations of Service and Pod can be viewed together.
 
 Service (`oc get service <Service Name>`):
 ```
@@ -188,7 +187,7 @@ Pod (`oc get pod <Pod Name>`):
 ...
 ```
 
-Diese Verknüpfung ist besser mittels `oc describe` Befehl zu sehen:
+This link is better seen with the `oc describe` command:
 ```
 $ oc describe service example-spring-boot
 ```
@@ -206,7 +205,7 @@ Session Affinity:  None
 No events.
 ```
 
-Unter Endpoints finden Sie nun den aktuell laufenden Pod.
+Under Endpoints you will now find the current Pod.
 
 
 ### ImageStream
