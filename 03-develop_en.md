@@ -572,19 +572,19 @@ spec --> template --> spec --> spec --> Container unter halb von `Ressourcen: { 
 ...
 ```
 
-Passen Sie das entsprechend analog oben an.
+Adjust the above accordingly.
 
-**Webconsole**
+**Web console**
 
-Die Readiness Probe kann auch in der Webconsole konfiguriert werden:
+The Readiness Probe can also be configured in the web console:
 
-1. Application -> Deployments -> example-spring-boot
-1. Oben rechts beim _Actions_ Button _Edit Health Checks_ auswählen: Add Readiness Probe
-1. Port 9000 auswählen
-1. Pfad: /health
+1. application -> deployments -> example-spring-boot
+Select _Edit Health Checks_ at the top right of the _Actions_ button: Add Readiness Probe
+1. select port 9000
+1st path: /health
 
 
-Die Konfiguration unter Container muss dann wie folgt aussehen:
+The configuration under Container must then look as follows:
 
 **YAML:**
 
@@ -647,15 +647,15 @@ Die Konfiguration unter Container muss dann wie folgt aussehen:
                 ],
 ```
 
-Verifizieren Sie während eines Deployment der Applikation, ob nun auch ein Update der Applikation unterbruchsfrei verläuft:
+During the deployment of the application, verify whether the application has been updated without interruption:
 
-Einmal pro Sekunde ein Request:
+One request per second:
 
 ```bash
 while true; do sleep 1; curl -s http://[route]/pod/; date "+ TIME: %H:%M:%S,%3N"; done
 ```
 
-Starten des Deployments:
+Start the deployment:
 
 ```bash
 $ oc rollout latest example-spring-boot
@@ -664,39 +664,39 @@ deploymentconfig.apps.openshift.io/example-spring-boot rolled out
 
 ## Self Healing
 
-Über den Replication Controller haben wir nun der Plattform mitgeteilt, dass jeweils **n** Replicas laufen sollen. Was passiert nun, wenn wir einen Pod löschen?
+Via the replication controller we have now informed the platform that **n** replicas should run in each case. What happens if we delete a Pod?
 
-Suchen Sie mittels `oc get pods` einen Pod im Status "running" aus, den Sie *killen* können.
+Use `oc get pods` to find a Pod with the status "running" that you can *kill*.
 
-Starten sie in einem eigenen Terminal den folgenden Befehl (anzeige der Änderungen an Pods)
+Start the following command in your own terminal (display changes to pods)
 
 ```
 oc get pods -w
 ```
 
-Löschen Sie im anderen Terminal einen Pod mit folgendem Befehl
+Delete a Pod in the other terminal with the following command
 
 ```
 oc delete pod example-spring-boot-10-d8dkz
 ```
 
-OpenShift sorgt dafür, dass wieder **n** Replicas des genannten Pods laufen.
+OpenShift makes sure that **n** replicas of the mentioned Pod run again.
 
-In der Webconsole ist gut zu Beobachten, wie der Pod zuerst hellblau ist, bis die Applikation auf der Readiness Probe mit 0K antwortet.
+In the web console you can observe how the Pod is light blue at first, until the application responds with 0K on the Readiness Probe.
 
-# Datenbank anbinden
+# Connect database
 
-Die meisten Applikationen sind in irgend einer Art stateful und speichern Daten persistent ab. Sei dies in einer Datenbank oder als Files auf einem Filesystem oder Objectstore. In diesem Lab werden wir in unserem Projekt einen MySQL Service anlegen und an unsere Applikation anbinden, sodass mehrere Applikationspods auf die gleiche Datenbank zugreifen können.
+Most applications are stateful in some way and store data persistently. Be it in a database or as files on a file system or objectstore. In this lab we will create a MySQL service in our project and connect it to our application so that several application pod can access the same database.
 
-Für dieses Beispiel verwenden wir das Spring Boot Beispiel `develop-userxy`. **Tipp:** `oc project develop-userxy`
+For this example we use the Spring Boot example `develop-userxy`. **Tip: ** `oc project develop-userxy`
 
-## Aufgabe: MySQL Service anlegen
+## Task: Create MySQL Service
 
-Für unser Beispiel verwenden wir in diesem Lab ein OpenShift Template, welches eine MySQL Datenbank mit EmptyDir Data Storage anlegt. Dies ist nur für Testumgebungen zu verwenden, da beim Restart des MySQL Pods alle Daten verloren gehen. In einem späteren Lab werden wir aufzeigen, wie wir ein Persistent Volume (mysql-persistent) an die MySQL Datenbank anhängen. Damit bleiben die Daten auch bei Restarts bestehen und ist so für den produktiven Betrieb geeignet.
+For our example we use an OpenShift template in this lab, which creates a MySQL database with EmptyDir Data Storage. This can only be used for test environments, because all data will be lost when restarting the MySQL Pod. In a later lab we will show how to add a persistent volume (mysql-persistent) to the MySQL database. This way the data remains persistent even during restarts and is therefore suitable for productive operation.
 
-Den MySQL Service können wir sowohl über die Web Console als auch über das CLI anlegen.
+We can create the MySQL service via the Web Console as well as via the CLI.
 
-Um dasselbe Ergebnis zu erhalten müssen lediglich Datenbankname, Username, Password und DatabaseServiceName gleich gesetzt werden, egal welche Variante verwendet wird:
+To get the same result you only have to set database name, username, password and DatabaseServiceName to the same value, no matter which variant is used:
 
 - MYSQL_USER techlab
 - MYSQL_PASSWORD techlab
@@ -705,7 +705,7 @@ Um dasselbe Ergebnis zu erhalten müssen lediglich Datenbankname, Username, Pass
 
 ### CLI
 
-Über das CLI kann der MySQL Service wie folgt mit Hilfe eines templates angelegt werden:
+Via the CLI the MySQL service can be created as follows with the help of a template:
 
 ```
 $ oc get templates
@@ -717,19 +717,19 @@ $ oc process -pMYSQL_USER=techlab -pMYSQL_PASSWORD=techlab -pMYSQL_DATABASE=tech
 
 ### Web Console
 
-In der Web Console kann der MySQL (Ephemeral) Service via Catalog dem Projekt hinzugefügt werden. Dazu oben rechts auf *Add to Project*, *Browse Catalog* klicken und anschliessend unter dem Reiter *Databases* *MySQL* und *MySQL (Ephemeral)* auswählen.
+In the Web Console, the MySQL (Ephemeral) service can be added to the project via Catalog. Click on *Add to Project*, *Browse Catalog* in the upper right corner and select *MySQL* and *MySQL (Ephemeral)* under the tab *Databases*.
 
-### Passwort und Username als Plaintext?
+### Password and username as plaintext?
 
-Beim Deployen der Datebank via CLI wie auch via Web Console haben wir mittels Parameter Werte für User, Passwort und Datenbank angegeben. In diesem Kapitel wollen wir uns nun anschauen, wo diese sensitiven Daten effektiv gelandet sind.
+When deploying the database via CLI as well as via Web Console we specified values for user, password and database via parameters. In this chapter we want to have a look where these sensitive data have effectively landed.
 
-Schauen wir uns als erstes die DeploymentConfig der Datenbank an:
+Let's first have a look at the DeploymentConfig of the database:
 
 ```bash
 $ oc get dc mysql -o yaml
 ```
 
-Konkret geht es um die Konfiguration der Container mittels env (MYSQL_USER, MYSQL_PASSWORD, MYSQL_ROOT_PASSWORD, MYSQL_DATABASE) in der DeploymentConfig unter `spec.templates.spec.containers`:
+Specifically it is about the configuration of the containers using env (MYSQL_USER, MYSQL_PASSWORD, MYSQL_ROOT_PASSWORD, MYSQL_DATABASE) in the DeploymentConfig under `spec.templates.spec.containers`:
 
 ```yaml
     spec:
@@ -757,15 +757,15 @@ Konkret geht es um die Konfiguration der Container mittels env (MYSQL_USER, MYSQ
               name: mysql
 ```
 
-Die Werte für die einzelnen Umgebungsvariablen kommen also aus einem sogenannten Secret, in unserem Fall hier aus dem Secret mit Namen `mysql`. In diesem Secret sind die vier Werte entsprechend unter den passenden Keys (`database-user`, `database-password`, `database-root-password`, `database-name`) abgelegt und können so referenziert werden.
+The values for the individual environment variables thus come from a so-called secret, in our case here from the secret with the name `mysql`. In this secret the four values are stored accordingly under the appropriate keys (`database-user`, `database-password`, `database-root-password`, `database-name`) and can thus be referenced.
 
-Schauen wir uns nun die neue Ressource Secret mit dem Namen `mysql` an:
+Let's take a look at the new resource Secret called `mysql`:
 
 ```bash
 $ oc get secret mysql -o yaml
 ```
 
-Die entsprechenden Key-Value Pairs sind unter `data` ersichtlich:
+The corresponding key value pairs are shown under `data`:
 
 ```yaml
 apiVersion: v1
@@ -791,55 +791,55 @@ metadata:
 type: Opaque
 ```
 
-Die konkreten Werte sind base64-kodiert. Unter Linux oder in der Gitbash kann man sich den entsprechenden Wert einfach mittels:
+The concrete values are base64 coded. Under Linux or in the Gitbash you can easily get the corresponding value by using :
 
 ```bash
-$ echo "dGVjaGxhYg==" | base64 -d
+&lt;font color="#ffff00"&gt;-==- proudly presents
 techlab
 ```
-anzeigen lassen. In userem Fall wird `dGVjaGxhYg==` in `techlab` dekodiert.
+to be displayed. In our case `dGVjaGxhYg==` is decoded in `techlab`.
 
-Mit Secrets können wir also sensitive Informationen (Credetials, Zertifikate, Schlüssel, dockercfg, ...) abspeichern und entsprechend von den Pods entkoppeln. Gleichzeitig haben wir damit die Möglichkeit, dieselben Secrets in mehreren Containern zu verwenden und so Redundanzen zu vermeiden.
+With Secrets we can store sensitive information (credetials, certificates, keys, dockercfg, ...) and decouple them from the pods. At the same time we have the possibility to use the same secrets in several containers and thus avoid redundancies.
 
-Secrets können entweder, wie oben bei der MySQL-Datenbank, in Umgebungsvariablen gemappt oder direkt als Files via Volumes in einen Container gemountet werden.
+Secrets can either be mapped into environment variables, as in the MySQL database above, or mounted directly into a container as files via volumes.
 
-Weitere Informationen zu Secrets können in der [offiziellen Dokumentation](https://docs.openshift.com/container-platform/3.11/dev_guide/secrets.html) gefunden werden.
+More information about Secrets can be found in the [official documentation](https://docs.openshift.com/container-platform/3.11/dev_guide/secrets.html).
 
-## Aufgabe: Applikation an die Datenbank anbinden
+## Task: Connect application to database
 
-Standardmässig wird bei unserer example-spring-boot Applikation eine H2 Memory Datenbank verwendet. Dies kann über das Setzen der folgenden Umgebungsvariablen entsprechend auf unseren neuen MySQL Service umgestellt werden:
+By default our example-spring-boot application uses a H2 memory database. This can be changed to our new MySQL service by setting the following environment variables:
 
 - SPRING_DATASOURCE_USERNAME techlab
 - SPRING_DATASOURCE_PASSWORD techlab
 - SPRING_DATASOURCE_DRIVER_CLASS_NAME com.mysql.jdbc.Driver
-- SPRING_DATASOURCE_URL jdbc:mysql://[Adresse des MySQL Service]/techlab?autoReconnect=true
+- SPRING_DATASOURCE_URL jdbc:mysql://[MySQL service address]/techlab?autoReconnect=true
 
-Für die Adresse des MySQL Service können wir entweder dessen Cluster IP (`oc get service`) oder aber dessen DNS-Namen (`<service>`) verwenden. Alle Services und Pods innerhalb eines Projektes können über DNS aufgelöst werden.
+For the MySQL service address we can use either its cluster IP (`oc get service`) or its DNS name (`<service>`). All services and pods within a project can be resolved via DNS.
 
-So lautet der Wert für die Variable SPRING_DATASOURCE_URL bspw.:
+This is the value for the variable SPRING_DATASOURCE_URL for example:
 ```
-Name des Services: mysql
+Name of the service: mysql
 
 jdbc:mysql://mysql/techlab?autoReconnect=true
 ```
 
-Diese Umgebungsvariablen können wir nun in der DeploymentConfig example-spring-boot setzen. Nach dem **ConfigChange** (ConfigChange ist in der DeploymentConfig als Trigger registriert) wird die Applikation automatisch neu deployed. Aufgrund der neuen Umgebungsvariablen verbindet die Applikation an die MySQL DB und [Liquibase](http://www.liquibase.org/) kreiert das Schema und importiert die Testdaten.
+We can now set these environment variables in the DeploymentConfig example-spring-boot. After **ConfigChange** (ConfigChange is registered as a trigger in DeploymentConfig) the application is automatically deployed again. Due to the new environment variables the application connects to the MySQL DB and [Liquibase](http://www.liquibase.org/) creates the schema and imports the test data.
 
-**Note:** Liquibase ist Open Source. Es ist eine Datenbank unabhängige Library um Datenbank Änderungen zu verwalten und auf der Datenbank anzuwenden. Liquibase erkennt beim Startup der Applikation, ob DB Changes auf der Datenbank angewendet werden müssen oder nicht. Siehe Logs.
+**Note:** Liquibase is Open Source. It is a database independent library to manage database changes and apply them to the database. Liquibase recognizes at the startup of the application whether DB changes have to be applied to the database or not. See Logs.
 
 
 ```
 SPRING_DATASOURCE_URL=jdbc:mysql://mysql/techlab?autoReconnect=true
 ```
-**Note:** mysql löst innerhalb Ihres Projektes via DNS Abfrage auf die Cluster IP des MySQL Service auf. Die MySQL Datenbank ist nur innerhalb des Projektes erreichbar. Der Service ist ebenfalls über den folgenden Namen erreichbar:
+**Note:** mysql resolves within your project via DNS query to the cluster IP of the MySQL service. The MySQL database is only accessible within the project. The service is also accessible via the following name:
 
 ```
-Projektname = techlab-dockerimage
+Project name = techlab-dockerimage
 
 mysql.techlab-dockerimage.svc.cluster.local
 ```
 
-Befehl für das Setzen der Umgebungsvariablen:
+Command for setting the environment variables:
 ```
 $ oc set env dc example-spring-boot \
       -e SPRING_DATASOURCE_URL="jdbc:mysql://mysql/techlab?autoReconnect=true" \
@@ -848,7 +848,7 @@ $ oc set env dc example-spring-boot \
       -e SPRING_DATASOURCE_DRIVER_CLASS_NAME=com.mysql.jdbc.Driver
 ```
 
-Über den folgenden Befehl können Sie sich die DeploymentConfig als JSON anschauen. Neu enthält die Config auch die gesetzten Umgebungsvariablen:
+You can use the following command to view DeploymentConfig as JSON. The Config now also contains the set environment variables:
 
 ```
  $ oc get dc example-spring-boot -o json
@@ -877,17 +877,18 @@ $ oc set env dc example-spring-boot \
 ...
 ```
 
-Die Konfiguration kann auch in der Web Console angeschaut und verändert werden:
+The configuration can also be viewed and changed in the Web Console:
 
 (Applications → Deployments → example-spring-boot, Actions, Edit YAML)
 
-## Aufgabe: Secret referenzieren
+## Task: Reference Secret
 
-Weiter oben haben wir gesehen, wie OpenShift mittels Secrets sensitive Informationen von der eigentlichen Konfiguration enkoppelt und uns dabei hilft, Redundanzen zu vermeiden. Unsere Springboot Applikation aus dem vorherigen Lab haben wir zwar korrekt konfiguriert, allerings aber die Werte redundant und Plaintext in der DeploymentConfig abgelegt.
+Above we have seen how OpenShift decouples sensitive information from the actual configuration using Secrets and helps us to avoid redundancies. We configured our Springboot application from the previous lab correctly, but stored the values redundant and plaintext in DeploymentConfig.
 
-Passen wir nun die DeploymentConfig example-spring-boot so an, dass die Werte aus den Secrets verwendet werden. Zu beachten gibt es die Konfiguration der Container unter `spec.template.spec.containers`
+Now let's adjust the DeploymentConfig example-spring-boot so that the values from the Secrets are used. Note the configuration of the containers under `spec.template.spec.containers`.
 
-Mittels `oc edit dc example-spring-boot -o json` kann die DeploymentConfig als Json wie folgt bearbeitet werden.
+Using `oc edit dc example-spring-boot -o json` you can edit the DeploymentConfig as Json as follows.
+
 ```
 ...
 "env": [
@@ -922,80 +923,84 @@ Mittels `oc edit dc example-spring-boot -o json` kann die DeploymentConfig als J
 ...
 ```
 
-Nun werden die Werte für Usernamen und Passwort sowohl beim mysql Pod wie auch beim Springboot Pod aus dem selben Secret gelesen.
+Now the values for username and password for both mysql Pod and Springboot Pod are read from the same secret.
 
 
-## Aufgabe: In MySQL Service Pod einloggen und manuell auf DB verbinden
+## Task: Log in to MySQL Service Pod and connect manually to DB
 
-Es kann mittels `oc rsh [POD]` in einen Pod eingeloggt werden:
+It can be logged into a Pod using `oc rsh [POD]`:
 ```
-$ oc get pods
-NAME                           READY     STATUS             RESTARTS   AGE
-example-spring-boot-8-wkros    1/1       Running            0          10m
-mysql-1-diccy                  1/1       Running            0          50m
+$ oc get Pods
+NAME READY STATUS STARTS NEW OLD
+Example-Spring boat-8-wkros 1/1 running 0 10m
+mysql-1-diccy 1/1 Running 0 50m
 
 ```
 
-Danach in den MySQL Pod einloggen:
+Then log in to the MySQL Pod:
 ```
 $ oc rsh mysql-1-diccy
 ```
 
-Nun können Sie mittels mysql Tool auf die Datenbank verbinden und die Tabellen anzeigen:
+Now you can use mysql tool to connect to the database and display the tables:
+
 ```
 $ mysql -u$MYSQL_USER -p$MYSQL_PASSWORD -h$MYSQL_SERVICE_HOST techlab
-Welcome to the MySQL monitor.  Commands end with ; or \g.
-Your MySQL connection id is 54
-Server version: 5.6.26 MySQL Community Server (GPL)
+Willkommen beim MySQL-Monitor.  Befehle enden mit ; oder \g.
+Deine MySQL-Verbindungs-ID ist 54.
+Server-Version: 5.6.26 MySQL Community Server (GPL)
 
-Copyright (c) 2000, 2015, Oracle and/or its affiliates. All rights reserved.
+Copyright (c) 2000, 2015, Oracle und/oder seine verbundenen Unternehmen. Alle Rechte vorbehalten.
 
-Oracle is a registered trademark of Oracle Corporation and/or its
-affiliates. Other names may be trademarks of their respective
-owners.
+Oracle ist eine eingetragene Marke der Oracle Corporation und/oder ihrer Tochtergesellschaften.
+verbundene Unternehmen. Andere Namen können Marken der jeweiligen Unternehmen sein.
+Besitzer.
 
-Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+Tippen Sie "help;" oder "\h" für Hilfe. Geben Sie'\c' ein, um die aktuelle Eingabeaufforderung zu löschen.
 
 mysql>
 ```
 
-Anschliessend können Sie mit
+Afterwards you can with the following command:
+
 ```
 show tables;
 ```
 
-alle Tabellen anzeigen.
+Display all tables.
 
 
-## Aufgabe: Dump auf MySQL DB einspielen
+## Task: Import dump to MySQL DB
 
-Die Aufgabe ist es, in den MySQL Pod den [Dump](https://raw.githubusercontent.com/appuio/techlab/lab-3.3/labs/data/08_dump/dump.sql) einzuspielen.
+The task is to import the [Dump](https://raw.githubusercontent.com/appuio/techlab/lab-3.3/labs/data/08_dump/dump.sql) into the MySQL Pod.
 
 
-**Tipp:** Mit `oc rsync` können Sie lokale Dateien in einen Pod kopieren. Alternativ kann auch curl im mysql container verwendet werden.
+**Tip:** Use `oc rsync` to copy local files to a Pod. Alternatively you can use curl in the mysql container.
 
-**Achtung:** Beachten Sie, dass dabei der rsync-Befehl des Betriebssystems verwendet wird. Auf UNIX-Systemen kann rsync mit dem Paketmanager, auf Windows kann bspw. [cwRsync](https://www.itefix.net/cwrsync) installiert werden. Ist eine Installation von rsync nicht möglich, kann stattdessen bspw. in den Pod eingeloggt und via `curl -O <URL>` der Dump heruntergeladen werden.
+**Note:** Note that this uses the rsync command of the operating system. On UNIX systems rsync can be installed with the package manager, on Windows for example [cwRsync](https://www.itefix.net/cwrsync) can be installed. If an installation of rsync is not possible, you can log into the Pod instead and download the dump via `curl -O <URL>`.
 
-**Tipp:** Verwenden Sie das Tool mysql um den Dump einzuspielen.
+**Tip:** Use the mysql tool to install the dump.
 
-**Tipp:** Die bestehende Datenbank muss vorgängig leer sein. Sie kann auch gelöscht und neu angelegt werden.
+**Tip:** The existing database must be empty. It can also be deleted and recreated.
 
 
 ---
 
-## Lösung
+## Solution
 
-Ein ganzes Verzeichnis (dump) syncen. Darin enthalten ist das File `dump.sql`. Beachten Sie zum rsync-Befehl auch obenstehenden Tipp sowie den fehlenden trailing slash.
+Sync an entire directory (dump). It contains the file `dump.sql`. For the rsync command, also note the above tip and the missing trailing slash.
+
 ```
 oc rsync ./labs/data/08_dump mysql-1-diccy:/tmp/
 ```
-In den MySQL Pod einloggen:
+
+Log in to the MySQL Pod:
 
 ```
 $ oc rsh mysql-1-diccy
 ```
 
-Bestehende Datenbank löschen:
+Delete existing database:
 ```
 $ mysql -u$MYSQL_USER -p$MYSQL_PASSWORD -h$MYSQL_SERVICE_HOST techlab
 ...
@@ -1003,19 +1008,18 @@ mysql> drop database techlab;
 mysql> create database techlab;
 mysql> exit
 ```
-Dump einspielen:
+Dump in:
 ```
 $ mysql -u$MYSQL_USER -p$MYSQL_PASSWORD -h$MYSQL_SERVICE_HOST techlab < /tmp/08_dump/dump.sql
 ```
 
-**Note:** Den Dump kann man wie folgt erstellen:
+**Note: The dump can be created as follows:
 
 ```
 mysqldump --user=$MYSQL_USER --password=$MYSQL_PASSWORD --host=$MYSQL_SERVICE_HOST techlab > /tmp/dump.sql
 ```
 # Bonus - Integration Webhook
 
-Die initiale ruby-ex Applikation ist auch in gogs gehostet. Machen sie einen Fork von der Applikation und integrieren sie den Webhook des Builds in das Projekt.
+The initial ruby-ex application is also hosted in gogs. Make a fork of the application and integrate the webhook of the build into the project.
 
-Wenn du nun Änderungen am Code durchführst, dann wird ein Build angestosen und die neue Version wird verfügbar.
-
+If you now make changes to the code, a build will be started and the new version will be available.
