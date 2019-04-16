@@ -12,7 +12,6 @@ parameters:
 - description: The namespace to instantiate prometheus under. Defaults to 'kube-system'.
   name: NAMESPACE
   required: true
-#  value: kube-system
 - description: The location of the proxy image
   name: IMAGE_PROXY
   value: openshift/oauth-proxy:v1.0.0
@@ -39,16 +38,6 @@ objects:
     annotations:
       serviceaccounts.openshift.io/oauth-redirectreference.prom: '{"kind":"OAuthRedirectReference","apiVersion":"v1","reference":{"kind":"Route","name":"prometheus"}}'
       serviceaccounts.openshift.io/oauth-redirectreference.alerts: '{"kind":"OAuthRedirectReference","apiVersion":"v1","reference":{"kind":"Route","name":"alerts"}}'
-#- apiVersion: authorization.openshift.io/v1
-#  kind: ClusterRoleBinding
-#  metadata:
-#    name: prometheus-cluster-reader
-#  roleRef:
-#    name: system:auth-delegator 
-#  subjects:
-#  - kind: ServiceAccount
-#    name: prometheus
-#    namespace: "${NAMESPACE}"
 - apiVersion: authorization.openshift.io/v1
   kind: RoleBinding
   metadata:
