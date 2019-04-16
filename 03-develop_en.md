@@ -2,7 +2,7 @@
 
 In this lab we will deploy the first "pre-built" Docker Image and take a closer look at the OpenShift concepts Pod, Service, DeploymentConfig and ImageStream.
 
-## Aufgabe
+## Task
 
 After using the Source-to-Image workflow as well as a binary and docker build to deploy an application to OpenShift, we will now deploy a pre-built docker image from DockerHub or another docker registry.
 
