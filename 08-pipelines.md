@@ -250,6 +250,8 @@ Now that there is an artifact, namely a jar file that we would like to run, we n
 oc project app-dev-userXY
 oc new-build --name=spring-app --strategy=docker --dockerfile="FROM java:8\n COPY . /deployments"
 oc new-app spring-app
+oc patch dc/spring-app -p '{"spec":{"triggers":[]}}'
+oc patch dc spring-app --type=json  -p '[{"op": "replace", "path": "/spec/template/spec/containers/0/readinessProbe", "value": { "failureThreshold": 3, "httpGet": { "path": "/pod", "port": 8080, "scheme": "HTTP" }, "initialDelaySeconds": 10, "periodSeconds": 10, "successThreshold": 1, "timeoutSeconds": 30 }}]'
 oc expose svc/spring-app
 ```
 
@@ -310,13 +312,91 @@ Example command:
 oc policy add-role-to-user edit system:serviceaccount:cicd-userXY:jenkins -n app-dev-userXY
 ```
 
-Run the build again and this time build should succeed.
+Run the build again and this time build should succeed. The new build should also trigger a new deployment. Verify that the latest deployment has run succesfully and there is a pod running for the application.
+
+
+### Step 4
+Next step is to tag the image that was just built but before that let's trigger a new deployment and add a simple to test to verify that software works as expected.
+
+Embed the *step* below into the pipeline to add a simple testing mechanism. A simple curl call is made and its HTTP return status code is checked after having a deployed the latest version of the app.
+
+```
+stage('Functional test') {
+            steps {
+                script {
+                    openshift.withProject("${devProject}") {
+                        openshift.selector("dc", app).rollout().latest()
+                        def latestDeploymentVersion = openshift.selector('dc',app).object().status.latestVersion
+                        def rc = openshift.selector('rc', "${app}-${latestDeploymentVersion}")
+                        timeout (time: 2, unit: 'MINUTES') {
+                            rc.untilEach(1){
+                                def rcMap = it.object()
+                                return (rcMap.status.replicas.equals(rcMap.status.readyReplicas))
+                            }
+                        }
+                        def route= sh( script:'oc get route '+app+' -ocustom-columns=host:{.spec.host} --no-headers -n' +devProject ,returnStdout: true)
+                        println("Calling route:${route}")
+                        def httpCode = sh(script:'curl -s -o /dev/null -w "%{http_code}" ' + route,returnStdout: true)
+                        if(httpCode!="200"){
+                            throw new Exception("Curl failed, HttpStatus:${httpCode}")
+                        }                        
+                    }
+                }
+            }
+        }
+
+```
+
+```
+def version    = getVersionFromPom(pomFile)
+
+
+def getVersionFromPom(pom) {
+  def matcher = readFile(pom) =~ '<version>(.+)</version>'
+  def version= matcher ? matcher[0][1] : null
+  if(version.endsWith('.RELEASE')){
+    version = version.substring(0,version.lastIndexOf('.'))
+  }
+  return version
+}
+
+
+   devTag = "build-${BUILD_NUMBER}"
+                echo "Using dev tag:${devTag}"
+                //Tag openshift image
+                openshiftTag alias: 'false', destStream: IMAGE_NAME, destTag: devTag, destinationNamespace: INT_OC_PROJECT, namespace: INT_OC_PROJECT, srcStream: IMAGE_NAME, srcTag: 'latest', verbose: 'false'
+
+
+git rev-parse --short HEAD
+
+
+```
 
 
 
 
 
 
+
+
+
+
+
+
+### Step 5
+
+Templates
+
+
+```
+oc export deploymentconfig,service,route --as-template=spring-app>template_spring-app.yml
+for ns in 'x' 'y ';do oc process -f template_spring-app.yml | oc create -f - -n "$ns";done
+```
+
+
+### Step 6
+
+Everything comes together
 
 
 
