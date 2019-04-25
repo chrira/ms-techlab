@@ -92,12 +92,12 @@ spec:
 
 and let's create a resource based on this file on the cicd project.
 ```
-oc create -f bc_first-pipeline.yaml 
+oc create -f bc_first-pipeline.yaml -n cicd-userXY
 ```
 
 As soon as the pipeline is created, we can start it with the following command:
 ```
-oc start-build first-pipeline
+oc start-build first-pipeline -n cicd-userXY
 ```
 
 Now go to OpenShift web console and go to pipelines view by clicking on Builds>Pipelines from the menu shown on left, see the image below:
@@ -248,7 +248,7 @@ Now that there is an artifact, namely a jar file that we would like to run, we n
 
 ```
 oc project app-dev-userXY
-oc new-build --name=spring-app --strategy=docker --dockerfile="FROM java:8\n COPY . /deployments"
+oc new-build java --name=spring-app   --binary=true
 oc new-app spring-app
 oc patch dc/spring-app -p '{"spec":{"triggers":[]}}'
 oc patch dc spring-app --type=json  -p '[{"op": "replace", "path": "/spec/template/spec/containers/0/readinessProbe", "value": { "failureThreshold": 3, "httpGet": { "path": "/pod", "port": 8080, "scheme": "HTTP" }, "initialDelaySeconds": 10, "periodSeconds": 10, "successThreshold": 1, "timeoutSeconds": 30 }}]'
@@ -285,7 +285,7 @@ pipeline {
       steps {
         script {
           openshift.withProject("${devProject}") {
-            println "Building latest on dc:${app} on project:${devProject}"
+            println "Building latest on bc:${app} on project:${devProject}"
             openshift.selector("bc", app).startBuild("--from-file=target/artifact.jar", "--wait")
           }
         }
@@ -319,6 +319,7 @@ Run the build again and this time build should succeed. The new build should als
 Next step is to tag the image that was just built but before that let's trigger a new deployment and add a simple to test to verify that software works as expected.
 
 Embed the *step* below into the pipeline to add a simple testing mechanism. A simple curl call is made and its HTTP return status code is checked after having a deployed the latest version of the app.
+Add code shown below to the end of pipeline.
 
 ```
 stage('Functional test') {
@@ -344,32 +345,28 @@ stage('Functional test') {
                 }
             }
         }
-
 ```
 
+Container image is tested and ready to be tagged.
+There will be two tags added to the image. One is based on the version derived from the pom and Jenkins Build Job number. The other one is based short git hash.
+Add code shown below to the end of pipeline.
+
 ```
-def version    = getVersionFromPom(pomFile)
-
-
-def getVersionFromPom(pom) {
-  def matcher = readFile(pom) =~ '<version>(.+)</version>'
-  def version= matcher ? matcher[0][1] : null
-  if(version.endsWith('.RELEASE')){
-    version = version.substring(0,version.lastIndexOf('.'))
-  }
-  return version
-}
-
-
-   devTag = "build-${BUILD_NUMBER}"
-                echo "Using dev tag:${devTag}"
-                //Tag openshift image
-                openshiftTag alias: 'false', destStream: IMAGE_NAME, destTag: devTag, destinationNamespace: INT_OC_PROJECT, namespace: INT_OC_PROJECT, srcStream: IMAGE_NAME, srcTag: 'latest', verbose: 'false'
-
-
-git rev-parse --short HEAD
-
-
+    stage('Tag image'){
+        steps{
+            script{
+                def matcher = readFile('pom.xml') =~ '<version>(.+)</version>'
+                def version = matcher ? matcher[0][1] : null
+                version+="${BUILD_NUMBER}" // BUILD_NUMBER variable comes from Jenkins Job
+                def gitHash= sh(script:'git rev-parse --short HEAD' ,returnStdout: true)
+                
+                openshift.withProject(devProject) {
+                    openshift.tag("${app}:latest", "${app}:${version}")
+                    openshift.tag("${app}:latest", "${app}:${gitHash}")
+                }
+            }
+        }
+    }
 ```
 
 
@@ -378,18 +375,28 @@ git rev-parse --short HEAD
 
 
 
+### Step 5: Templates
 
 
 
+Command below creates a template with objects of type DeploymentConfig, Service and Route.
+```
+oc export deploymentconfig,service,route --as-template=spring-app -n app-dev-userXY >template_spring-app.yml
+```
 
+The template which is saved in a file called *template_spring-app.yml* can be used for importing OpenShift objects that make up the application in other projects/namespaces.
 
-### Step 5
+One important thing to notice here is that, BuildConfig is not exported. Reason for that is, our goal is to use the same container image that is already built. That means, integration and production stages need to pull container image from development stage. Commands below assign the correct rights for int and prod stages on dev stage:
 
-Templates
+```
+
+oc policy add-role-to-user system:image-puller system:serviceaccount:app-prod-userXY:default --namespace=app-dev-userXY
+
+oc policy add-role-to-user system:image-puller system:serviceaccount:app-int-userXY:default --namespace=app-dev-userXY
+```
 
 
 ```
-oc export deploymentconfig,service,route --as-template=spring-app>template_spring-app.yml
 for ns in 'x' 'y ';do oc process -f template_spring-app.yml | oc create -f - -n "$ns";done
 ```
 
