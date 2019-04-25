@@ -369,15 +369,9 @@ Add code shown below to the end of pipeline.
     }
 ```
 
-
-
-
-
-
-
 ### Step 5: Templates
 
-
+Now that Dev stage is ready and  OpenShift objects from Dev stage need to be exported and imported into the next stages.
 
 Command below creates a template with objects of type DeploymentConfig, Service and Route.
 ```
@@ -395,16 +389,97 @@ oc policy add-role-to-user system:image-puller system:serviceaccount:app-prod-us
 oc policy add-role-to-user system:image-puller system:serviceaccount:app-int-userXY:default --namespace=app-dev-userXY
 ```
 
+```
+for ns in 'x' 'y ';do oc process -f template_spring-app.yml | oc apply -f - -n "$ns";done
+```
 
-```
-for ns in 'x' 'y ';do oc process -f template_spring-app.yml | oc create -f - -n "$ns";done
-```
+https://github.com/kubernetes-sigs/kustomize/releases
 
 
 ### Step 6
 
-Everything comes together
+```
+def app = 'spring-app'
+def devProject = 'app-dev-userXY'
+def accProject = 'app-int-userXY'
+def prodProject = 'app-prod-userXY'
+def project = ''
+def imageTag = ''
 
+properties([
+        parameters([
+                choice(choices: "acceptance\nproduction", description: 'Stage, which will be checked out.', name: 'STAGE'),
+		string(name: 'TAG', defaultValue: '', description: 'Image tag to use for deployment')
+
+        ])
+])
+
+switch ("${params.STAGE}") {
+    case "acceptance":
+        project = accProject
+        break
+
+    case "production":
+        project = prodProject
+        break
+
+    default:
+        project = ''
+}
+
+if (project == '') {
+    currentBuild.result = 'ABORTED'
+    error('No valid project selected ...')
+}
+
+imageTag = params.TAG
+
+if(!imageTag){
+    currentBuild.result = 'ABORTED'
+    error('No tag entered...')
+}
+
+pipeline {
+    agent {
+        label 'maven-slave'
+//        label 'maven-slave || maven-slave2'
+    }
+
+    stages {
+        stage('Change image stream') {
+            steps {
+                script {
+                        openshift.withProject(project) {
+                            latestDeploy = openshift.selector('dc', app).object()
+                            latestDeploy.spec.template.spec.containers[0].image="docker-registry.default.svc:5000/${devProject}/${app}:${imageTag}"
+                            openshift.apply(latestDeploy)
+                        }
+                }
+            }
+        }
+
+        stage('Deploy image') {
+            steps {
+                script {
+                        openshift.withProject(project) {
+                            openshift.selector("dc", app).rollout().latest()
+                            timeout(3) {
+                                def latestDeploymentVersion = openshift.selector('dc', app).object().status.latestVersion
+                                def rc = openshift.selector('rc', "${app}-${latestDeploymentVersion}")
+                                rc.untilEach(1) {
+                                    def rcMap = it.object()
+                                    return (rcMap.status.replicas.equals(rcMap.status.readyReplicas))
+                                }
+                            }
+                        }
+                }
+            }
+        }
+    }
+}
+
+
+```
 
 
 
