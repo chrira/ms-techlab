@@ -371,16 +371,11 @@ Add code shown below to the end of pipeline.
 
 ### Step 5: Templates
 
-Now that Dev stage is ready and  OpenShift objects from Dev stage need to be exported and imported into the next stages.
+Now that Dev stage is ready and  OpenShift objects for next stange can be created.
 
-Command below creates a template with objects of type DeploymentConfig, Service and Route.
-```
-oc export deploymentconfig,service,route --as-template=spring-app -n app-dev-userXY >template_spring-app.yml
-```
+The template which is saved in a file called *labs/data/pipelines/template_spring-app.yml* can be used for importing OpenShift objects that make up the application in other projects/namespaces. OpenShift templating is a simple yet powerful abstraction. To learn more about it, see [here](https://docs.openshift.com/container-platform/3.11/dev_guide/templates.html) and [here](openshift_templates.md) . For general templating options see [here](templating.md).
 
-The template which is saved in a file called *template_spring-app.yml* can be used for importing OpenShift objects that make up the application in other projects/namespaces.
-
-One important thing to notice here is that, BuildConfig is not exported. Reason for that is, our goal is to use the same container image that is already built. That means, integration and production stages need to pull container image from development stage. Commands below assign the correct rights for int and prod stages on dev stage:
+One important thing to notice here is that, BuildConfig is not included in the template. Reason for that is, our goal is to use the same container image that is already built. That means, integration and production stages need to pull container image from development stage. Commands below assign the correct rights for int and prod stages on dev stage:
 
 ```
 
@@ -389,11 +384,11 @@ oc policy add-role-to-user system:image-puller system:serviceaccount:app-prod-us
 oc policy add-role-to-user system:image-puller system:serviceaccount:app-int-userXY:default --namespace=app-dev-userXY
 ```
 
-```
-for ns in 'x' 'y ';do oc process -f template_spring-app.yml | oc apply -f - -n "$ns";done
-```
+With the following command, Openshift objects required for the application can be created on both INT and PROD stages:
 
-https://github.com/kubernetes-sigs/kustomize/releases
+```
+for ns in 'app-int-userXY' 'app-prod-userXY';do oc process -f labs/data/pipelines/template_spring-app.yml | oc apply -f - -n "$ns";done
+```
 
 
 ### Step 6
