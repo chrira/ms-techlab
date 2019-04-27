@@ -13,7 +13,7 @@ We will deploy our familiar ruby-ex application on a dedication branch called `p
 Create a new app.
 
 ```bash
-oc new-app openshift/ruby:2.5~http://gogs.apps.zurich-XYZ.openshiftworkshop.com/ocpadmin/ruby-ex.git#prom --name prometheus-app -l app=prometheus-app
+oc new-app openshift/ruby:2.5~http://gogs.apps.six-zh-522a.openshiftworkshop.com/ocpadmin/ruby-ex.git#prom --name prometheus-app -l app=prometheus-app
 ```
 
 Expose the service as route
@@ -82,7 +82,7 @@ Visit the app and see how your access is counted within prometheus.
 Now let's generate some load. The following command, will generate every once in a while a call to /not-found, while otherwise calling /, so we should get some 404 metrics:
 
 ```bash
-while true; do url="https://prometheus-app-prometheus-userXY.apps.zurich-XYZ.openshiftworkshop.com/$(if [ $(( ( RANDOM % 10 )  + 1 )) -eq 10 ]; then echo "not-found"; fi)"; echo $url; curl -k -o /dev/null -s $url; sleep 0.25; done
+while true; do url="https://prometheus-app-prometheus-userXY.apps.six-zh-522a.openshiftworkshop.com/$(if [ $(( ( RANDOM % 10 )  + 1 )) -eq 10 ]; then echo "not-found"; fi)"; echo $url; curl -k -o /dev/null -s $url; sleep 0.25; done
 ```
 
 We can now see how many http-codes we get on average over the last 5 minutes:

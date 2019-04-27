@@ -114,7 +114,7 @@ oc new-project autoscale-userXY
 On the branch load there is a CPU intensive endpoint which we will use for our tests. Therefore we start the app on this branch:
 
 ```bash
-oc new-app openshift/ruby:2.5~http://gogs.apps.zurich-XYZ.opensfhiftworkshop.com/ocpadmin/ruby-ex.git#load
+oc new-app openshift/ruby:2.5~http://gogs.apps.six-zh-522a.opensfhiftworkshop.com/ocpadmin/ruby-ex.git#load
 oc create route edge --insecure-policy=Redirect --service=ruby-ex
 ```
 
@@ -150,7 +150,7 @@ oc autoscale dc ruby-ex --min 1 --max 3 --cpu-percent=25
 Now we can generate load on the service:
 
 ```bash
-for i in {1..500}; do curl -s https://ruby-ex-autoscale-userXY.apps.zurich-XYZ.openshiftworkshop.com/load ; done;
+for i in {1..500}; do curl -s https://ruby-ex-autoscale-userXY.apps.six-zh-522a.openshiftworkshop.com/load ; done;
 ```
 
 The current values we can get over:

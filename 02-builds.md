@@ -18,7 +18,7 @@ Our example is based on a very simple Ruby application hosted on the internal go
 
     oc new-project s2i-userXY
     oc new-app -h
-    oc new-app ruby:2.5~http://gogs.apps.zurich-XYZ.openshiftworkshop.com/ocpadmin/ruby-ex.git
+    oc new-app ruby:2.5~http://gogs.apps.six-zh-522a.openshiftworkshop.com/ocpadmin/ruby-ex.git
     oc status
 
 
@@ -51,7 +51,7 @@ One or more war can be placed in the deployments folder. In this example an exis
 mkdir tmp-bin
 cd tmp-bin
 mkdir deployments
-wget -O deployments/ROOT.war http://gogs.apps.zurich-XYZ.openshiftworkshop.com/ocpadmin/techlab/raw/master/data/hello-world-war-1.0.0.war
+wget -O deployments/ROOT.war http://gogs.apps.six-zh-522a.openshiftworkshop.com/ocpadmin/techlab/raw/master/data/hello-world-war-1.0.0.war
 ```
 
 ### Create a new build using the Wildfly image
@@ -135,7 +135,7 @@ Command:
 
 ```bash
 oc new-project docker-build-userXY
-oc new-build --strategy=docker http://gogs.apps.zurich-XYZ.openshiftworkshop.com/ocpadmin/httpd.git
+oc new-build --strategy=docker http://gogs.apps.six-zh-522a.openshiftworkshop.com/ocpadmin/httpd.git
 ```
 
 Follow how the build goes and if the image will be present in your registry.
