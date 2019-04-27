@@ -322,7 +322,7 @@ Embed the *step* below into the pipeline to add a simple testing mechanism. A si
 Add code shown below to the end of pipeline.
 
 ```
-stage('Functional test') {
+stage('Functional tests') {
             steps {
                 script {
                     openshift.withProject("${devProject}") {
@@ -351,13 +351,26 @@ Container image is tested and ready to be tagged.
 There will be two tags added to the image. One is based on the version derived from the pom and Jenkins Build Job number. The other one is based short git hash.
 Add code shown below to the end of pipeline.
 
+First, add a function to the end of the pipeline(after closing curly brackets).
+```
+def getVersionFromPom(pom) {
+  def matcher = readFile(pom) =~ '<version>(.+)</version>'
+  def version= matcher ? matcher[0][1] : null
+  if(version.endsWith('.RELEASE')){
+    version = version.substring(0,version.lastIndexOf('.'))
+  }
+  return version
+}
+```
+
+Add a new stage for tagging with code below:
+
 ```
     stage('Tag image'){
         steps{
             script{
-                def matcher = readFile('pom.xml') =~ '<version>(.+)</version>'
-                def version = matcher ? matcher[0][1] : null
-                version+="${BUILD_NUMBER}" // BUILD_NUMBER variable comes from Jenkins Job
+                
+                version=getVersionFromPom('pom.xml')+"${BUILD_NUMBER}" // BUILD_NUMBER variable comes from Jenkins Job
                 def gitHash= sh(script:'git rev-parse --short HEAD' ,returnStdout: true)
                 
                 openshift.withProject(devProject) {
@@ -389,7 +402,6 @@ With the following command, Openshift objects required for the application can b
 ```
 for ns in 'app-int-userXY' 'app-prod-userXY';do oc process -f labs/data/pipelines/template_spring-app.yml | oc apply -f - -n "$ns";done
 ```
-
 
 ### Step 6
 
