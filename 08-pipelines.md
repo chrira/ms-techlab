@@ -405,25 +405,29 @@ for ns in 'app-int-userXY' 'app-prod-userXY';do oc process -f labs/data/pipeline
 
 ### Step 6
 
+It's time to deploy to non-DEV stages. Create a new pipeline by clicking on 'New Item' on the main Jenkins screen. In this new screen, select the 'Pipeline' type and create a pipeline based on the code below.
+
+By the way, you might run into couple of issues when running this new pipeline. Using what you've learned in the previous steps, you should be able to solve them.
+
 ```
 def app = 'spring-app'
 def devProject = 'app-dev-userXY'
-def accProject = 'app-int-userXY'
+def intProject = 'app-int-userXY'
 def prodProject = 'app-prod-userXY'
 def project = ''
 def imageTag = ''
 
 properties([
         parameters([
-                choice(choices: "acceptance\nproduction", description: 'Stage, which will be checked out.', name: 'STAGE'),
+                choice(choices: "integration\nproduction", description: 'Stage, which will be checked out.', name: 'STAGE'),
 		string(name: 'TAG', defaultValue: '', description: 'Image tag to use for deployment')
 
         ])
 ])
 
 switch ("${params.STAGE}") {
-    case "acceptance":
-        project = accProject
+    case "integration":
+        project = intProject
         break
 
     case "production":
@@ -448,8 +452,7 @@ if(!imageTag){
 
 pipeline {
     agent {
-        label 'maven-slave'
-//        label 'maven-slave || maven-slave2'
+        label 'master'
     }
 
     stages {
@@ -484,11 +487,9 @@ pipeline {
         }
     }
 }
-
-
 ```
 
-
+If you create a pipeline on OpenShift, it will automatically get synced with Jenkins back. When a pipeline is created directly on Jenkins however, it will not appear under OpenShift pipelines automatically.
 
 
 
@@ -506,9 +507,7 @@ Jenkins slaves which run as Pods are by default stateless i.e. if there are arti
 ### OpenShift Jenkins Sync
 [Openshift-jenkins-sync-plugin](https://github.com/openshift/jenkins-sync-plugin/blob/master/README.md) can sync objects such as Secrets,ConfigMaps from OpenShift projects onto Jenkins. This is a very powerful feature and it's also the main enabler of pipeline strategy builds. One typical use case is to keep credentials such git ssh keys as secrets and have Jenkins sync them so that these credentials can be used in build jobs.
 
-For syncing secrets please make sure that secrets are labeled accordingly.
- 
-```  oc label secret jboss-eap-quickstarts-github-key credential.sync.jenkins.openshift.io=true```
+For syncing secrets make sure that secrets are labeled accordingly. E.g. :```  oc label secret jboss-eap-quickstarts-github-key credential.sync.jenkins.openshift.io=true```
 
 
 
@@ -528,3 +527,9 @@ $CICD_PROJECT is the OpenShift project on which Jenkins job runs.
 $SA sets the service account which runs the Jenkins job.
 $TARGET_PROJECT is where OpenShift object you interact with resides on.
 ```
+
+### Running jobs on one of the slaves instead of specific ones
+       
+label 'maven-slave || maven-slave2'
+
+### One Jenkins Many OpenShift Clusters
