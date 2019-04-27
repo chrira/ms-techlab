@@ -29,7 +29,7 @@ Pipeline workflows are defined in a Jenkinsfile, either embedded directly in the
 
 ## First pipeline
 
-You should have access to a project called **cicd-userXY**  , switch to thi project via:
+You should have access to a project called **cicd-userXY**  , switch to this project via:
 
 ```bash
 oc project cicd-userXY
@@ -94,6 +94,8 @@ and let's create a resource based on this file on the cicd project.
 ```
 oc create -f bc_first-pipeline.yaml -n cicd-userXY
 ```
+
+**Note*** command above creates the pipeline in CICD project. If the pipeline would be created in DEV stage then the cluster would try to provision a Jenkins master instance in the DEV stage. In the current step, a jenkins master should already be provisioned in the CICD project.
 
 As soon as the pipeline is created, we can start it with the following command:
 ```
@@ -491,8 +493,24 @@ pipeline {
 
 If you create a pipeline on OpenShift, it will automatically get synced with Jenkins back. When a pipeline is created directly on Jenkins however, it will not appear under OpenShift pipelines automatically.
 
+###Step X
+Now that you know the basic knowhow about using Jenkins on OpenShift you might want to tackle more complex scenarios.
+#### A/B deployments:
+The A/B deployment strategy lets you try a new version of the application in a limited way in the production environment. You can specify that the production version gets most of the user requests while a limited fraction of requests go to the new version. Since you control the portion of requests to each version, as testing progresses you can increase the fraction of requests to the new version and ultimately stop using the previous version.  See [here](https://docs.openshift.com/container-platform/3.11/dev_guide/deployments/advanced_deployment_strategies.html#advanced-deployment-a-b-deployment) for more details.
 
 
+In a nutshell: Have 2 deploymentconfigs which use different versions of container images and have 2 services each of which points to a specific deploymentconfig. Read [this link](https://docs.openshift.com/container-platform/3.11/architecture/networking/routes.html#alternateBackends) to see how you can loadbalance incoming traffic to diffferent services.
+
+#### Blue / Green deployments
+Martin Fowler defines Blue/Green deployments so:
+>One of the challenges with automating deployment is the cut-over itself, taking software from the final stage of testing to live production. You usually need to do this quickly in order to minimize downtime. The blue-green deployment approach does this by ensuring you have two production environments, as identical as possible. At any time one of them, let's say blue for the example, is live. As you prepare a new release of your software you do your final stage of testing in the green environment. Once the software is working in the green environment, you switch the router so that all incoming requests go to the green environment - the blue one is now idle. 
+
+Thanks to abstractions offered, blue/green deployments are pretty straightforward on OpenShift.
+See [here](https://docs.openshift.com/container-platform/3.11/dev_guide/deployments/advanced_deployment_strategies.html#advanced-deployment-strategies-blue-green-deployments) for OpenShift's take on it.
+
+And [here](https://github.com/mcelep/ocp-adv-app-dev/blob/master/dev/Jenkinsfile) is an example blue/green pipeline.
+
+Go ahead and see if you can implement a pipeline for blue/greed deployment yourself.
 
 ## General tips and tricks
 
@@ -516,6 +534,8 @@ Jenkins slaves/masters can run on one cluster and they can interact with other c
 In order to address multiple clusters, first configure them on Jenkins via *Manage Jenkins-> Configure Systems->OpenShift Jenkins Sync* as shown in image below.
 ![Jenkins sync plugin](data/images/jenkins_sync.png "Jenkins sync plugin")
 
+Using the declarative pipeline, specific clusters can be targeted using `openshift.withCluster` notation.
+
 ### Openshift rights
 All pods on OpenShift run with a ServiceAccount and the service account that 'runs' a job should have the rights set up according to what actions it aims to execute on the target namespace/project.
 
@@ -527,9 +547,3 @@ $CICD_PROJECT is the OpenShift project on which Jenkins job runs.
 $SA sets the service account which runs the Jenkins job.
 $TARGET_PROJECT is where OpenShift object you interact with resides on.
 ```
-
-### Running jobs on one of the slaves instead of specific ones
-       
-label 'maven-slave || maven-slave2'
-
-### One Jenkins Many OpenShift Clusters
