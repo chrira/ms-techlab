@@ -4,7 +4,7 @@ This lab shows how to proceed in case of errors and troubleshooting and which to
 
 ## Log in to container
 
-We use the project `develop-userxy` again. **Tip:** `oc project develop-userxy`
+We use the project `develop-userXY` again. **Tip:** `oc project develop-userXY`
 
 Running containers are treated as unchangeable infrastructure and should generally not be modified. However, there are use cases where you have to log in to the containers. For example for debugging and analysis.
 
@@ -87,8 +87,8 @@ OpenShift 3 allows you to forward arbitrary ports from the development workstati
 Lab: Accessing the Spring Boot Metrics.
 
 ```
-oc get pod --namespace="develop-userxy"
-oc port-forward example-spring-boot-1-xj1df 9000:9000 --namespace="develop-userxy"
+oc get pod --namespace="develop-userXY"
+oc port-forward example-spring-boot-1-xj1df 9000:9000 --namespace="develop-userXY"
 ```
 
 Don't forget to adapt the Pod name to your own installation. If installed, autocompletion can be used.
@@ -114,8 +114,8 @@ oc new-project autoscale-userXY
 On the branch load there is a CPU intensive endpoint which we will use for our tests. Therefore we start the app on this branch:
 
 ```bash
-oc new-app openshift/ruby:2.5~http://gogs.apps.six-zh-522a.opensfhiftworkshop.com/ocpadmin/ruby-ex.git#load
-oc create route edge --insecure-policy=Redirect --service=ruby-ex
+oc new-app openshift/ruby:2.5~http://gogs.apps.six-zh-522a.openshiftworkshop.com/ocpadmin/ruby-ex.git#load
+oc create route edge --insecure-policy=Allow --service=ruby-ex
 ```
 
 Wait until the application is built and ready and the first metrics appear. You can follow the build as well as the existing pods.
