@@ -163,7 +163,7 @@ pipeline {
   stages {
     stage("Clone Source") {
       steps {
-       git 'https://github.com/mcelep/quarkus-hello-world.git'
+       git 'https://github.com/mcelep/spring-boot-hello-world.git'
       }
     }
     
