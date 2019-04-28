@@ -13,7 +13,7 @@ When dealing with containers in a CI/CD settings the following principles are ve
 - Container images should be built once and only once. If you have to build different images per stage, something went wrong :(
 - For configuring stage dependant things such as database credentials & coordinates, MQ related settings and general application configuration, use environment values, configuration files that are populated via ConfigMaps and/or Secrets.
 - Container images should be tagged so that matching software/code is visible
-- Changes from one stage to the next, should be applied via automation and without any manual intervention.
+- Changes from one stage to the next, should be applied via automation and without any manual intervention. Changes should be reproducible and traceable.
 
 ## Pipelines
 
@@ -163,7 +163,7 @@ pipeline {
   stages {
     stage("Clone Source") {
       steps {
-       git 'https://github.com/mcelep/example-spring-boot-helloworld'
+       git 'https://github.com/mcelep/quarkus-hello-world.git'
       }
     }
     
