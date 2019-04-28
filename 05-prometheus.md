@@ -19,7 +19,7 @@ oc new-app openshift/ruby:2.5~http://gogs.apps.six-zh-522a.openshiftworkshop.com
 Expose the service as route
 
 ```bash
-oc create route edge --service=prometheus-app
+oc create route edge --insecure-policy=Allow --service=prometheus-app
 ```
 
 ## deploy prometheus

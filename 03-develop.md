@@ -1,33 +1,32 @@
 # Develop Application
 
-In diesem Lab werden wir gemeinsam das erste "pre-built" Docker Image deployen und die OpenShift-Konzepte Pod, Service, DeploymentConfig und ImageStream etwas genauer anschauen.
+In this lab we will deploy the first "pre-built" Docker Image and take a closer look at the OpenShift concepts Pod, Service, DeploymentConfig and ImageStream.
 
+## Task
 
-## Aufgabe
+After using the Source-to-Image workflow as well as a binary and docker build to deploy an application to OpenShift, we will now deploy a pre-built docker image from DockerHub or another docker registry.
 
-Nachdem wir im vorher den Source-to-Image Workflow, wie auch ein Binary und Docker Build verwendet haben, um eine Applikation auf OpenShift zu deployen, wenden wir uns nun dem Deployen eines pre-built Docker Images von Docker Hub oder einer anderen Docker-Registry zu.
+> [Further Documentation](https://docs.openshift.com/container-platform/3.11/dev_guide/application_lifecycle/new_app.html#specifying-an-image)
 
-> [Weiterführende Dokumentation](https://docs.openshift.com/container-platform/3.11/dev_guide/application_lifecycle/new_app.html#specifying-an-image)
+As a first step we create a new project. A project is a grouping of resources (container and docker images, pods, services, routes, configuration, quotas, limits and more). Users authorized for the project can manage these resources. Within an OpenShift cluster, the name of a project must be unique.
 
-Als ersten Schritt erstellen wir dafür ein neues Projekt. Ein Projekt ist eine Gruppierung von Ressourcen (Container und Docker Images, Pods, Services, Routen, Konfiguration, Quotas, Limiten und weiteres). Für das Projekt berechtigte User können diese Ressourcen verwalten. Innerhalb eines OpenShift Clusters muss der Name eines Projektes eindeutig sein.
-
-Erstellen Sie daher ein neues Projekt mit dem Namen `develop-userXY`:
+Therefore, create a new project with the name `develop-userXY`:
 
 ```
 $ oc new-project develop-userXY
 ```
 
-`oc new-project` wechselt automatisch in das eben neu angelegte Projekt. Mit dem `oc get` Command können Ressourcen von einem bestimmten Typ angezeigt werden.
+`oc new-project` automatically changes to the newly created project. With `oc get` command, resources of a certain type can be displayed.
 
-Verwenden Sie
+Use
 
 ```
 $ oc get project
 ```
 
-um alle Projekte anzuzeigen, auf die Sie berechtigt sind.
+to list all the projects you have access to.
 
-Sobald das neue Projekt erstellt wurde, können wir in OpenShift mit dem folgenden Befehl das Docker Image deployen:
+Once the new project has been created, we can deploy the Docker image in OpenShift with the following command:
 
 ```
 $ oc new-app appuio/example-spring-boot
@@ -36,7 +35,7 @@ $ oc new-app appuio/example-spring-boot
 Output:
 
 ```
---> Found Docker image e355426 (3 months old) from Docker Hub for "appuio/example-spring-boot"
+--> Found Docker image e355426 (4 months old) from Docker Hub for "appuio/example-spring-boot"
 
     APPUiO Spring Boot App
     ----------------------
@@ -57,31 +56,31 @@ Output:
     Run 'oc status' to view your app.
 ```
 
-Für unser Lab verwenden wir ein APPUiO-Beispiel (Java Spring Boot Applikation):
+For our lab we use an APPUiO example(Java Spring Boot Application):
 - Docker Hub: https://hub.docker.com/r/appuio/example-spring-boot/
 - GitHub (Source): https://github.com/appuio/example-spring-boot-helloworld
 
-OpenShift legt die nötigen Ressourcen an, lädt das Docker Image in diesem Fall von Docker Hub herunter und deployt anschliessend den ensprechenden Pod.
+OpenShift creates the necessary resources, downloads the Docker image from Docker Hub and deploys the corresponding Pod.
 
-**Tipp:** Verwenden Sie `oc status` um sich einen Überblick über das Projekt zu verschaffen.
+**Tipp:** Use `oc status` to get an overview of current project.
 
-Oder verwenden Sie den `oc get` Befehl mit dem `-w` Parameter, um fortlaufend Änderungen an den Ressourcen des Typs Pod anzuzeigen (abbrechen mit ctrl+c):
+Alternatively, use `oc get` command with `-w` Parameter, to see ongoing changes of resources with type pod (cancel with ctrl+c):
 ```
 $ oc get pods -w
 ```
 
-Je nach Internetverbindung oder abhängig davon, ob das Image auf Ihrem OpenShift Node bereits heruntergeladen wurde, kann das eine Weile dauern. Schauen Sie sich doch in der Web Console den aktuellen Status des Deployments an:
+Depending on your internet connection or whether the image on your OpenShift Node has already been downloaded, this may take a while. Check the current status of the deployment in the Web Console:
 
-1. Loggen Sie sich in der Web Console ein
-2. Wählen Sie Ihr Projekt `develop-userXY` aus
-3. Klicken Sie auf Applications
-4. Wählen Sie Pods aus
+1. Log in to the Web Console
+2. Select your project `develop-userXY`.
+3. Click on Applications
+4. Select Pods
 
-**Tipp** Um Ihre eigenen Docker Images für OpenShift zu erstellen, sollten Sie die folgenden Best Practices befolgen: https://docs.openshift.com/container-platform/3.11/creating_images/guidelines.html
+**Tip** To create your own Docker Images for OpenShift, you should follow these best practices: https://docs.openshift.com/container-platform/3.11/creating_images/guidelines.html
 
-## Betrachten der erstellten Ressourcen
+## Viewing the created resources
 
-Als wir `oc new-app appuio/example-spring-boot` vorhin ausführten, hat OpenShift im Hintergrund einige Ressourcen für uns angelegt. Die werden dafür benötigt, dieses Docker Image zu deployen:
+When we were running `oc new-app appuio/example-spring-boot` earlier, OpenShift created some resources for us in the background. They are needed to deploy this Docker image:
 
 - [Service](https://docs.openshift.com/container-platform/3.11/architecture/core_concepts/pods_and_services.html#services)
 - [ImageStream](https://docs.openshift.com/container-platform/3.11/architecture/core_concepts/builds_and_image_streams.html#image-streams)
@@ -89,13 +88,13 @@ Als wir `oc new-app appuio/example-spring-boot` vorhin ausführten, hat OpenShif
 
 ### Service
 
-[Services](https://docs.openshift.com/container-platform/3.11/architecture/core_concepts/pods_and_services.html#services) dienen innerhalb OpenShift als Abstraktionslayer, Einstiegspunkt und Proxy/Loadbalancer auf die dahinterliegenden Pods. Der Service ermöglicht es, innerhalb OpenShift eine Gruppe von Pods des gleichen Typs zu finden und anzusprechen.
+[Services](https://docs.openshift.com/container-platform/3.11/architecture/core_concepts/pods_and_services.html#services) serve within OpenShift as an abstraction layer, entry point and proxy/load balancer to the underlying pods. The service makes it possible to find and address a group of pods of the same type within OpenShift.
 
-Als Beispiel: Wenn eine Applikationsinstanz unseres Beispiels die Last nicht mehr alleine verarbeiten kann, können wir die Applikation bspw. auf drei Pods hochskalieren. OpenShift mapt diese als Endpoints automatisch zum Service. Sobald die Pods bereit sind, werden Requests automatisch auf alle drei Pods verteilt.
+As an example: If an application instance in our example can no longer handle the load alone, we can upscale the application to three pods, for example. OpenShift automatically maps these as endpoints to the service. As soon as the pods are ready, requests are automatically distributed to all three pods.
 
-**Note:** Die Applikation kann aktuell von aussen noch nicht erreicht werden, der Service ist ein OpenShift-internes Konzept. Im folgenden Lab werden wir die Applikation öffentlich verfügbar machen.
+**Note:** The application cannot yet be reached from the outside, the service is an OpenShift internal concept. In the following lab we will make the application publicly available.
 
-Nun schauen wir uns unseren Service mal etwas genauer an:
+Now let's take a closer look at our service:
 
 ```
 $ oc get services
@@ -106,11 +105,11 @@ NAME                  CLUSTER-IP      EXTERNAL-IP   PORT(S)    AGE
 example-spring-boot   172.30.124.20   <none>        8080/TCP   2m
 ```
 
-Wie Sie am Output sehen, ist unser Service (example-spring-boot) über eine IP und Port erreichbar (172.30.124.20:8080) **Note:** Ihre IP kann unterschiedlich sein.
+As you can see from the output, our service (example-spring-boot) is reachable via an IP and port (172.30.124.20:8080) **Note:** Your IP can be different.
 
-**Note:** Service IPs bleiben während ihrer Lebensdauer immer gleich.
+**Note:** Service IPs always remain the same during their lifetime.
 
-Mit dem folgenden Befehl können Sie zusätzliche Informationen über den Service auslesen:
+You can use the following command to read additional information about the service:
 ```
 $ oc get service example-spring-boot -o json
 ```
@@ -157,14 +156,14 @@ $ oc get service example-spring-boot -o json
 }
 ```
 
-Mit dem entsprechenden Befehl können Sie auch die Details zu einem Pod anzeigen:
+You can also use the appropriate command to view the details of a Pod:
 ```
 $ oc get pod example-spring-boot-3-nwzku -o json
 ```
 
-**Note:** Zuerst den pod Namen aus Ihrem Projekt abfragen (`oc get pods`) und im oberen Befehl ersetzen.
+**Note:** First get the pod name from your project (`oc get pods`) and replace it in the upper command.
 
-Über den `selector` Bereich im Service wird definiert, welche Pods (`labels`) als Endpoints dienen. Dazu können die entsprechenden Konfigurationen von Service und Pod zusammen betrachtet werden.
+The `selector` area in the service defines which pods (`labels`) serve as endpoints. The corresponding configurations of Service and Pod can be viewed together.
 
 Service (`oc get service <Service Name>`):
 ```
@@ -188,14 +187,14 @@ Pod (`oc get pod <Pod Name>`):
 ...
 ```
 
-Diese Verknüpfung ist besser mittels `oc describe` Befehl zu sehen:
+This link is better seen with the `oc describe` command:
 ```
 $ oc describe service example-spring-boot
 ```
 
 ```
 Name:      example-spring-boot
-Namespace:    techlab
+Namespace:    develop-userXY
 Labels:      app=example-spring-boot
 Selector:    app=example-spring-boot,deploymentconfig=example-spring-boot
 Type:      ClusterIP
@@ -206,69 +205,70 @@ Session Affinity:  None
 No events.
 ```
 
-Unter Endpoints finden Sie nun den aktuell laufenden Pod.
+Under Endpoints you will now find the current Pod.
 
 
 ### ImageStream
-[ImageStreams](https://docs.openshift.com/container-platform/3.11/architecture/core_concepts/builds_and_image_streams.html#image-streams) werden dafür verwendet, automatische Tasks auszuführen wie bspw. ein Deployment zu aktualisieren, wenn eine neue Version des Images oder des Basisimages verfügbar ist.
+[ImageStreams](https://docs.openshift.com/container-platform/3.11/architecture/core_concepts/builds_and_image_streams.html#image-streams) are used to perform automatic tasks such as updating a deployment when a new version of the image or base image is available.
 
-Builds und Deployments können Image Streams beobachten und auf Änderungen entsprechend reagieren. In unserem Beispiel wird der Image Stream dafür verwendet, ein Deployment zu triggern, sobald etwas am Image geändert hat.
+Builds and deployments can monitor image streams and respond to changes accordingly. In our example, the image stream is used to trigger a deployment once something has changed the image.
 
-Mit dem folgenden Befehl können Sie zusätzliche Informationen über den Image Stream auslesen:
+With the following command you can get additional information about the image stream:
 ```
 $ oc get imagestream example-spring-boot -o json
 ```
 
 ### DeploymentConfig
 
-In der [DeploymentConfig](https://docs.openshift.com/container-platform/3.11/dev_guide/deployments/how_deployments_work.html) werden folgende Punkte definiert:
+In the [DeploymentConfig](https://docs.openshift.com/container-platform/3.11/dev_guide/deployments/how_deployments_work.html) the following points are defined:
 
-- Update Strategy: wie werden Applikationsupdates ausgeführt, wie erfolgt das Austauschen der Container?
-- Triggers: Welche Triggers führen zu einem Deployment? In unserem Beispiel ImageChange
-- Container
-  - Welches Image soll deployed werden?
-  - Environment Configuration für die Pods
+- Update Strategy: how are application updates executed, how are containers exchanged?
+- Triggers: Which triggers lead to a deployment? In our example ImageChange
+- container
+  - What image should be deployed?
+  - Environment Configuration for the Pods
   - ImagePullPolicy
-- Replicas, Anzahl der Pods, die deployt werden sollen
+- Replicas, number of pods to be deployed
 
 
-Mit dem folgenden Befehl können zusätzliche Informationen zur DeploymentConfig ausgelesen werden:
+The following command can be used to read additional information about DeploymentConfig:
 ```
 $ oc get deploymentConfig example-spring-boot -o json
 ```
 
-Im Gegensatz zur DeploymentConfig, mit welcher man OpenShift sagt, wie eine Applikation deployt werden soll, definiert man mit dem ReplicationController, wie die Applikation während der Laufzeit aussehen soll (bspw. dass immer 3 Replicas laufen sollen).
+In contrast to DeploymentConfig, which tells OpenShift how an application should be deployed, the ReplicationController defines how the application should behave during runtime (e.g. that 3 replicas should always run).
 
-**Tipp:** für jeden Resource Type gibt es auch eine Kurzform. So können Sie bspw. `oc get deploymentconfig` auch einfach als `oc get dc` schreiben.
+**Tip:** for each resource type there is also a short form. For example, you can write `oc get deploymentconfig` as `oc get dc`.
 
-# Unseren Service mittels Route online verfügbar machen
+# Make our service available online via route
 
-In diesem Lab werden wir die Applikation von vorher über **https** vom Internet her erreichbar machen.
+In this lab we will make the application accessible from Internet via **https**.
 
-## Routen
 
-Der `oc new-app` Befehl aus dem vorherigen Lab erstellt keine Route. Somit ist unser Service von *aussen* her gar nicht erreichbar. Will man einen Service verfügbar machen, muss dafür eine Route eingerichtet werden. Der OpenShift Router erkennt aufgrund des Host Headers auf welchen Service ein Request geleitet werden muss.
+## Routes
 
-Aktuell werden folgende Protokolle unterstützt:
+`oc new-app` command from the previous Lab does not create a route. So our service is not reachable from *outside* at all. If you want to make a service available, you have to set up a route for it. The OpenShift Router recognizes which service a request has to be routed to based on the host header.
+
+Currently the following protocols are supported:
 
 - HTTP
 - HTTPS ([SNI](https://en.wikipedia.org/wiki/Server_Name_Indication))
-- WebSockets
-- TLS mit [SNI](https://en.wikipedia.org/wiki/Server_Name_Indication)
+- web sockets
+- TLS with [SNI](https://en.wikipedia.org/wiki/Server_Name_Indication)
 
-## Aufgabe
+## Task
 
-Vergewissern Sie sich, dass Sie sich im Projekt `develop-userXY` befinden. **Tipp:** `oc project develop-userXY`
+Make sure that you are in the project `develop-userXY`. **Tip:** `oc project develop-userXY`
 
-Erstellen Sie für den Service `example-spring-boot` eine Route und machen Sie ihn darüber öffentlich verfügbar.
+Create a route for the `example-spring-boot` service and make it publicly available.
 
-**Tipp:** Mittels `oc get routes` können Sie sich die Routen eines Projekts anzeigen lassen.
+**Tip:** With `oc get routes` you can display the routes of a project.
 
 ```
 $ oc get routes
 ```
 
-Aktuell gibt es noch keine Route. Jetzt brauchen wir den Servicenamen:
+Currently there is no route. Now we need the service name:
 
 ```
 $ oc get services
@@ -276,15 +276,15 @@ NAME                  CLUSTER-IP      EXTERNAL-IP   PORT(S)    AGE
 example-spring-boot   172.30.124.20   <none>        8080/TCP   11m
 ```
 
-Und nun wollen wir diesen Service veröffentlichen / exposen:
+And now we want to publish / expose this service:
 
 ```
-oc create route edge --service=example-spring-boot
+oc create route edge --insecure-policy=Allow --service=example-spring-boot
 ```
 
-Per default wird eine http Route erstellt.
+By default, an http & https route is created. Can you make the Route automatically redirect to HTTPS if accessed over plain HTTP?
 
-Mittels `oc get routes` können wir überprüfen, ob die Route angelegt wurde.
+With `oc get routes` we can check if the route has been created.
 
 ```
 $ oc get routes
@@ -292,29 +292,29 @@ NAME                  HOST/PORT                                   PATH      SERV
 example-spring-boot   example-spring-boot-techlab.mycluster.com             example-spring-boot:8080-tcp                 app=example-spring-boot
 ```
 
-Die Applikation ist nun vom Internet her über den angegebenen Hostnamen erreichbar, Sie können also nun auf die Applikation zugreifen.
+The application is now accessible from the Internet via the specified host name, so you can now access the application.
 
-**Tipp:** Wird kein Hostname angegeben wird der Standardname verwendet: *servicename-project.osecluster*
+**Tip:** If no hostname is specified, the default name is used: *servicename-project.osecluster*
 
-In der Overview der Web Console ist diese Route mit dem Hostnamen jetzt auch sichtbar.
+In the Web Console Overview, this route with the host name is now also visible.
 
 ---
 
-# Pod Scaling, Readiness Probe und Self Healing
+# Pod Scaling, Readiness Probe and Self Healing
 
-In diesem Lab zeigen wir auf, wie man Applikationen in OpenShift skaliert. Des Weiteren zeigen wir, wie OpenShift dafür sorgt, dass jeweils die Anzahl erwarteter Pods gestartet wird und wie eine Applikation der Plattform zurückmelden kann, dass sie bereit für Requests ist.
+In this lab we show you how to scale applications in OpenShift. Furthermore, we show how OpenShift ensures that the number of expected pods is started and how an application can report back to the platform that it is ready for requests.
 
-## Example Applikation hochskalieren
+## Upscale Example Application
 
-Dafür verwenden wir das vorherige Projekt
+For this we use the previous project
 
 ```
 $ oc project develop-userXY
 ```
 
-Wenn wir unsere Example Applikation skalieren wollen, müssen wir unserem ReplicationController (rc) mitteilen, dass wir bspw. stets 3 Replicas des Images am Laufen haben wollen.
+If we want to scale our example application, we have to tell our replication controller (rc) that we always want 3 replicas of the image to work.
 
-Schauen wir uns mal den ReplicationController (rc) etwas genauer an:
+Let's take a closer look at the ReplicationController (rc):
 
 ```
 $ oc get rc
@@ -322,22 +322,22 @@ NAME                    DESIRED   CURRENT   READY     AGE
 example-spring-boot-1   1         1         1         33s
 ```
 
-Für mehr Details:
+For more details:
 
 ```
 oc get rc example-spring-boot-1 -o json
 ```
 
-Der rc sagt uns, wieviele Pods wir erwarten (spec) und wieviele aktuell deployt sind (status).
+The rc tells us how many pods we expect (spec) and how many are currently deployed (status).
 
-## Aufgabe: skalieren unserer Beispiel Applikation
-Nun skalieren wir unsere Example Applikation auf 3 Replicas:
+## Task: scale our example application
+Now we scale our Example application to 3 replicas:
 
 ```
 $ oc scale --replicas=3 dc example-spring-boot
 ```
 
-Überprüfen wir die Anzahl Replicas auf dem ReplicationController:
+Let's check the number of replicas on the ReplicationController:
 
 ```bash
 $ oc get rc
@@ -345,7 +345,7 @@ NAME                    DESIRED   CURRENT   READY     AGE
 example-spring-boot-4   3         3         3         16m
 ```
 
-und zeigen entsprechend die Pods an:
+and display the pods accordingly:
 
 ```bash
 $ oc get pods
@@ -355,7 +355,7 @@ example-spring-boot-4-tznqp   1/1       Running   0          16m
 example-spring-boot-4-vdhqc   1/1       Running   0          1m
 ```
 
-Zum Schluss schauen wir uns den Service an. Der sollte jetzt alle drei Endpoints referenzieren:
+Finally, we take a look at the service. It should now reference all three endpoints:
 
 ```bash
 $ oc describe svc example-spring-boot
@@ -374,27 +374,27 @@ Session Affinity:  None
 Events:            <none>
 ```
 
-Skalieren von Pods innerhalb eines Services ist sehr schnell, da OpenShift einfach eine neue Instanz des Docker Images als Container startet.
+Scaling pods within a service is very fast because OpenShift simply starts a new instance of the Docker image as a container.
 
-**Tipp:** OpenShift unterstützt auch Autoscaling, die Dokumentation dazu ist unter dem folgenden Link zu finden: https://docs.openshift.com/container-platform/3.11/dev_guide/pod_autoscaling.html - Wir werden uns damit später noch detailierter beschäftigen.
+**Tip:** OpenShift also supports autoscaling, the documentation can be found at the following link: https://docs.openshift.com/container-platform/3.11/dev_guide/pod_autoscaling.html - We will deal with this in more detail later.
 
-## Aufgabe: skalierte App in der Web Console
+## Task: scaled app in the web console
 
-Schauen Sie sich die skalierte Applikation auch in der Web Console an.
+Take a look at the scaled application in the Web Console.
 
-## Unterbruchsfreies Skalieren überprüfen
+## Check uninterrupted scaling
 
-Mit dem folgenden Befehl können Sie nun überprüfen, ob Ihr Service verfügbar ist, während Sie hoch und runter skalieren.
-Ersetzen Sie dafür `[route]` mit Ihrer definierten Route:
+With the following command you can now check if your service is available as you scale up and down.
+Replace `[route]` with your defined route:
 
-**Tipp:** oc get route
+**Tip:** oc get route
 
 ```bash
 while true; do sleep 1; curl -s https://[route]/pod/; date "+ TIME: %H:%M:%S,%3N"; done
 ```
 
-und skalieren Sie von **3** Replicas auf **1**.
-Der Output zeigt jeweils den Pod an, der den Request verarbeitete:
+and scale from **3**** replicas to **1****.
+The output shows the Pod that processed the request:
 
 ```bash
 Pod: example-spring-boot-4-tznqp TIME: 15:07:51,162
@@ -411,15 +411,15 @@ Pod: example-spring-boot-4-fqh9n TIME: 15:08:05,193
 Pod: example-spring-boot-4-vdhqc TIME: 15:08:06,547
 ```
 
-Die Requests werden an die unterschiedlichen Pods geleitet, sobald man runterskaliert auf einen Pod, gibt dann nur noch einer Antwort
+The requests will be forwarded to the different pods, as soon as you scale down to a pod, you will get only one response
 
-Was passiert nun, wenn wir nun während dem der While Befehl oben läuft, ein neues Deployment starten:
+What happens now when we start a new deployment while the While command is running above?
 
 ```
 $ oc rollout latest example-spring-boot
 ```
 
-Währen einiger Zeit gibt die öffentliche Route keine Antwort
+For some time the public route gives no answer
 
 ```bash
 Pod: example-spring-boot-5-rv9qs TIME: 16:13:44,938
@@ -448,34 +448,34 @@ Pod: example-spring-boot-6-q99dq TIME: 16:14:18,362
 Pod: example-spring-boot-6-q99dq TIME: 16:14:19,655
 ```
 
-Es kann dann sogar sein, dass der Service gar nicht mehr online ist und der Routing Layer ein **503 Error** zurück gibt.
+It may even happen that the service is no longer online and the routing layer returns a **503 error**.
 
-Im Folgenden Kapitel wird beschrieben, wie Sie Ihre Services konfigurieren können, dass unterbruchsfreie Deployments möglich werden.
+The following chapter describes how to configure your services to allow interruption-free deployments.
 
-## Unterbruchsfreies Deployment mittels Readiness Probe und Rolling Update
+## Uninterrupted deployment using Readiness Probe and Rolling Update
 
-Die Update Strategie [Rolling](https://docs.openshift.com/container-platform/3.11/dev_guide/deployments/deployment_strategies.html#rolling-strategy) ermöglicht unterbruchsfreie Deployments. Damit wird die neue Version der Applikation gestartet, sobald die Applikation bereit ist, werden Request auf den neuen Pod geleitet und die alte Version undeployed.
+The update strategy [Rolling](https://docs.openshift.com/container-platform/3.11/dev_guide/deployments/deployment_strategies.html#rolling-strategy) allows interruption-free deployments. This will launch the new version of the application, as soon as the application is ready, Request will be routed to the new Pod and the old version undeployed.
 
-Zusätzlich kann mittels [Container Health Checks](https://docs.openshift.com/container-platform/3.11/dev_guide/application_health.html) die deployte Applikation der Plattform detailliertes Feedback über ihr aktuelles Befinden geben.
+In addition, the deployed application can give the platform detailed feedback about its current state via [Container Health Checks](https://docs.openshift.com/container-platform/3.11/dev_guide/application_health.html).
 
-Grundsätzlich gibt es zwei Checks, die implementiert werden können:
+Basically, there are two checks that can be implemented:
 
-- Liveness Probe, sagt aus, ob ein laufender Container immer noch sauber läuft.
-- Readiness Probe, gibt Feedback darüber, ob eine Applikation bereit ist, um Requests zu empfangen. Ist v.a. im Rolling Update relevant.
+- Liveness Probe, indicates whether a running container is still running cleanly.
+- Readiness Probe, gives feedback on whether an application is ready to receive requests. Is particularly relevant in the rolling update.
 
-Diese beiden Checks können als HTTP Check, Container Execution Check (Shell Script im Container) oder als TCP Socket Check implementiert werden.
+These two checks can be implemented as HTTP Check, Container Execution Check (Shell Script in Container) or TCP Socket Check.
 
-In unserem Beispiel soll die Applikation der Plattform sagen, ob sie bereit für Requests ist. Dafür verwenden wir die Readiness Probe. Unsere Beispielapplikation gibt auf der folgenden URL auf Port 9000 (Management-Port der Spring Applikation) ein Status Code 200 zurück, sobald die Applikation bereit ist.
+In our example, the application of the platform should tell if it is ready for requests. For this we use the Readiness Probe. Our example application returns a status code 200 on the following URL on port 9000 (management port of the Spring application) as soon as the application is ready.
 
 ```bash
-http://[route]/health/
+curl http://[route]/health/
 ```
 
-## Aufgabe
+## Task
 
-In der Deployment Config (dc) definieren im Abschnitt der Rolling Update Strategie, dass bei einem Update die App immer verfügbar sein soll: `maxUnavailable: 0%`
+In the Deployment Config (dc) section of the Rolling Update Strategy, define that the app should always be available during an update: `maxUnavailable: 0%`.
 
-Dies kann in der Deployment Config (dc) konfiguriert werden:
+This can be configured in the Deployment Config (dc):
 
 **YAML:**
 
@@ -494,12 +494,12 @@ spec:
 ...
 ```
 
-Die Deployment Config kann via Web Console oder direkt über `oc` editiert werden.
+The Deployment Config can be edited via Web Console or directly via `oc`.
 ```
 $ oc edit dc example-spring-boot
 ```
 
-Oder im JSON-Format editieren:
+Or edit in JSON format:
 ```
 $ oc edit dc example-spring-boot -o json
 ```
@@ -520,9 +520,9 @@ $ oc edit dc example-spring-boot -o json
 }
 ```
 
-Für die Probes braucht es den Maintenance Port (9000).
+For the probes you need the Maintenance Port (9000).
 
-Dazu den Port in der Deployment Config (dc) hinzugefügt werden, falls er noch nicht drin ist. Dies unter:
+To do this, add the port in the Deployment Config (dc) if it is not already there. This under:
 
 spec --> template --> spec --> containers --> ports:
 
@@ -538,7 +538,7 @@ spec --> template --> spec --> containers --> ports:
 
 Die Readiness Probe muss in der Deployment Config (dc) hinzugefügt werden, und zwar unter:
 
-spec --> template --> spec --> containers unter halb von `resources: {  }`
+spec --> template --> spec --> spec --> Container unter halb von `Ressourcen: { }`
 
 **YAML:**
 
@@ -572,19 +572,19 @@ spec --> template --> spec --> containers unter halb von `resources: {  }`
 ...
 ```
 
-Passen Sie das entsprechend analog oben an.
+Adjust the above accordingly.
 
-**Webconsole**
+**Web console**
 
-Die Readiness Probe kann auch in der Webconsole konfiguriert werden:
+The Readiness Probe can also be configured in the web console:
 
-1. Application -> Deployments -> example-spring-boot
-1. Oben rechts beim _Actions_ Button _Edit Health Checks_ auswählen: Add Readiness Probe
-1. Port 9000 auswählen
-1. Pfad: /health
+1. application -> deployments -> example-spring-boot
+Select _Edit Health Checks_ at the top right of the _Actions_ button: Add Readiness Probe
+1. select port 9000
+1st path: /health
 
 
-Die Konfiguration unter Container muss dann wie folgt aussehen:
+The configuration under Container must then look as follows:
 
 **YAML:**
 
@@ -647,15 +647,15 @@ Die Konfiguration unter Container muss dann wie folgt aussehen:
                 ],
 ```
 
-Verifizieren Sie während eines Deployment der Applikation, ob nun auch ein Update der Applikation unterbruchsfrei verläuft:
+During the deployment of the application, verify whether the application has been updated without interruption:
 
-Einmal pro Sekunde ein Request:
+One request per second:
 
 ```bash
 while true; do sleep 1; curl -s http://[route]/pod/; date "+ TIME: %H:%M:%S,%3N"; done
 ```
 
-Starten des Deployments:
+Start the deployment:
 
 ```bash
 $ oc rollout latest example-spring-boot
@@ -664,39 +664,39 @@ deploymentconfig.apps.openshift.io/example-spring-boot rolled out
 
 ## Self Healing
 
-Über den Replication Controller haben wir nun der Plattform mitgeteilt, dass jeweils **n** Replicas laufen sollen. Was passiert nun, wenn wir einen Pod löschen?
+Via the replication controller we have now informed the platform that **n** replicas should run in each case. What happens if we delete a Pod?
 
-Suchen Sie mittels `oc get pods` einen Pod im Status "running" aus, den Sie *killen* können.
+Use `oc get pods` to find a Pod with the status "running" that you can *kill*.
 
-Starten sie in einem eigenen Terminal den folgenden Befehl (anzeige der Änderungen an Pods)
+Start the following command in your own terminal (display changes to pods)
 
 ```
 oc get pods -w
 ```
 
-Löschen Sie im anderen Terminal einen Pod mit folgendem Befehl
+Delete a Pod in the other terminal with the following command
 
 ```
 oc delete pod example-spring-boot-10-d8dkz
 ```
 
-OpenShift sorgt dafür, dass wieder **n** Replicas des genannten Pods laufen.
+OpenShift makes sure that **n** replicas of the mentioned Pod run again.
 
-In der Webconsole ist gut zu Beobachten, wie der Pod zuerst hellblau ist, bis die Applikation auf der Readiness Probe mit 0K antwortet.
+In the web console you can observe how the Pod is light blue at first, until the application responds with 0K on the Readiness Probe.
 
-# Datenbank anbinden
+# Connect database
 
-Die meisten Applikationen sind in irgend einer Art stateful und speichern Daten persistent ab. Sei dies in einer Datenbank oder als Files auf einem Filesystem oder Objectstore. In diesem Lab werden wir in unserem Projekt einen MySQL Service anlegen und an unsere Applikation anbinden, sodass mehrere Applikationspods auf die gleiche Datenbank zugreifen können.
+Most applications are stateful in some way and store data persistently. Be it in a database or as files on a file system or objectstore. In this lab we will create a MySQL service in our project and connect it to our application so that several application pod can access the same database.
 
-Für dieses Beispiel verwenden wir das Spring Boot Beispiel `develop-userxy`. **Tipp:** `oc project develop-userxy`
+For this example we use the Spring Boot example `develop-userxy`. **Tip: ** `oc project develop-userxy`
 
-## Aufgabe: MySQL Service anlegen
+## Task: Create MySQL Service
 
-Für unser Beispiel verwenden wir in diesem Lab ein OpenShift Template, welches eine MySQL Datenbank mit EmptyDir Data Storage anlegt. Dies ist nur für Testumgebungen zu verwenden, da beim Restart des MySQL Pods alle Daten verloren gehen. In einem späteren Lab werden wir aufzeigen, wie wir ein Persistent Volume (mysql-persistent) an die MySQL Datenbank anhängen. Damit bleiben die Daten auch bei Restarts bestehen und ist so für den produktiven Betrieb geeignet.
+For our example we use an OpenShift template in this lab, which creates a MySQL database with EmptyDir Data Storage. This can only be used for test environments, because all data will be lost when restarting the MySQL Pod. In a later lab we will show how to add a persistent volume (mysql-persistent) to the MySQL database. This way the data remains persistent even during restarts and is therefore suitable for productive operation.
 
-Den MySQL Service können wir sowohl über die Web Console als auch über das CLI anlegen.
+We can create the MySQL service via the Web Console as well as via the CLI.
 
-Um dasselbe Ergebnis zu erhalten müssen lediglich Datenbankname, Username, Password und DatabaseServiceName gleich gesetzt werden, egal welche Variante verwendet wird:
+To get the same result you only have to set database name, username, password and DatabaseServiceName to the same value, no matter which variant is used:
 
 - MYSQL_USER techlab
 - MYSQL_PASSWORD techlab
@@ -705,7 +705,7 @@ Um dasselbe Ergebnis zu erhalten müssen lediglich Datenbankname, Username, Pass
 
 ### CLI
 
-Über das CLI kann der MySQL Service wie folgt mit Hilfe eines templates angelegt werden:
+Via the CLI the MySQL service can be created as follows with the help of a template:
 
 ```
 $ oc get templates
@@ -717,19 +717,19 @@ $ oc process -pMYSQL_USER=techlab -pMYSQL_PASSWORD=techlab -pMYSQL_DATABASE=tech
 
 ### Web Console
 
-In der Web Console kann der MySQL (Ephemeral) Service via Catalog dem Projekt hinzugefügt werden. Dazu oben rechts auf *Add to Project*, *Browse Catalog* klicken und anschliessend unter dem Reiter *Databases* *MySQL* und *MySQL (Ephemeral)* auswählen.
+In the Web Console, the MySQL (Ephemeral) service can be added to the project via Catalog. Click on *Add to Project*, *Browse Catalog* in the upper right corner and select *MySQL* and *MySQL (Ephemeral)* under the tab *Databases*.
 
-### Passwort und Username als Plaintext?
+### Password and username as plaintext?
 
-Beim Deployen der Datebank via CLI wie auch via Web Console haben wir mittels Parameter Werte für User, Passwort und Datenbank angegeben. In diesem Kapitel wollen wir uns nun anschauen, wo diese sensitiven Daten effektiv gelandet sind.
+When deploying the database via CLI as well as via Web Console we specified values for user, password and database via parameters. In this chapter we want to have a look where these sensitive data have effectively landed.
 
-Schauen wir uns als erstes die DeploymentConfig der Datenbank an:
+Let's first have a look at the DeploymentConfig of the database:
 
 ```bash
 $ oc get dc mysql -o yaml
 ```
 
-Konkret geht es um die Konfiguration der Container mittels env (MYSQL_USER, MYSQL_PASSWORD, MYSQL_ROOT_PASSWORD, MYSQL_DATABASE) in der DeploymentConfig unter `spec.templates.spec.containers`:
+Specifically it is about the configuration of the containers using env (MYSQL_USER, MYSQL_PASSWORD, MYSQL_ROOT_PASSWORD, MYSQL_DATABASE) in the DeploymentConfig under `spec.templates.spec.containers`:
 
 ```yaml
     spec:
@@ -757,15 +757,15 @@ Konkret geht es um die Konfiguration der Container mittels env (MYSQL_USER, MYSQ
               name: mysql
 ```
 
-Die Werte für die einzelnen Umgebungsvariablen kommen also aus einem sogenannten Secret, in unserem Fall hier aus dem Secret mit Namen `mysql`. In diesem Secret sind die vier Werte entsprechend unter den passenden Keys (`database-user`, `database-password`, `database-root-password`, `database-name`) abgelegt und können so referenziert werden.
+The values for the individual environment variables thus come from a so-called secret, in our case here from the secret with the name `mysql`. In this secret the four values are stored accordingly under the appropriate keys (`database-user`, `database-password`, `database-root-password`, `database-name`) and can thus be referenced.
 
-Schauen wir uns nun die neue Ressource Secret mit dem Namen `mysql` an:
+Let's take a look at the new resource Secret called `mysql`:
 
 ```bash
 $ oc get secret mysql -o yaml
 ```
 
-Die entsprechenden Key-Value Pairs sind unter `data` ersichtlich:
+The corresponding key value pairs are shown under `data`:
 
 ```yaml
 apiVersion: v1
@@ -791,55 +791,55 @@ metadata:
 type: Opaque
 ```
 
-Die konkreten Werte sind base64-kodiert. Unter Linux oder in der Gitbash kann man sich den entsprechenden Wert einfach mittels:
+The concrete values are base64 coded. Under Linux or in the Gitbash you can easily get the corresponding value by using :
 
 ```bash
-$ echo "dGVjaGxhYg==" | base64 -d
+&lt;font color="#ffff00"&gt;-==- proudly presents
 techlab
 ```
-anzeigen lassen. In userem Fall wird `dGVjaGxhYg==` in `techlab` dekodiert.
+to be displayed. In our case `dGVjaGxhYg==` is decoded in `techlab`.
 
-Mit Secrets können wir also sensitive Informationen (Credetials, Zertifikate, Schlüssel, dockercfg, ...) abspeichern und entsprechend von den Pods entkoppeln. Gleichzeitig haben wir damit die Möglichkeit, dieselben Secrets in mehreren Containern zu verwenden und so Redundanzen zu vermeiden.
+With Secrets we can store sensitive information (credetials, certificates, keys, dockercfg, ...) and decouple them from the pods. At the same time we have the possibility to use the same secrets in several containers and thus avoid redundancies.
 
-Secrets können entweder, wie oben bei der MySQL-Datenbank, in Umgebungsvariablen gemappt oder direkt als Files via Volumes in einen Container gemountet werden.
+Secrets can either be mapped into environment variables, as in the MySQL database above, or mounted directly into a container as files via volumes.
 
-Weitere Informationen zu Secrets können in der [offiziellen Dokumentation](https://docs.openshift.com/container-platform/3.11/dev_guide/secrets.html) gefunden werden.
+More information about Secrets can be found in the [official documentation](https://docs.openshift.com/container-platform/3.11/dev_guide/secrets.html).
 
-## Aufgabe: Applikation an die Datenbank anbinden
+## Task: Connect application to database
 
-Standardmässig wird bei unserer example-spring-boot Applikation eine H2 Memory Datenbank verwendet. Dies kann über das Setzen der folgenden Umgebungsvariablen entsprechend auf unseren neuen MySQL Service umgestellt werden:
+By default our example-spring-boot application uses a H2 memory database. This can be changed to our new MySQL service by setting the following environment variables:
 
 - SPRING_DATASOURCE_USERNAME techlab
 - SPRING_DATASOURCE_PASSWORD techlab
 - SPRING_DATASOURCE_DRIVER_CLASS_NAME com.mysql.jdbc.Driver
-- SPRING_DATASOURCE_URL jdbc:mysql://[Adresse des MySQL Service]/techlab?autoReconnect=true
+- SPRING_DATASOURCE_URL jdbc:mysql://[MySQL service address]/techlab?autoReconnect=true
 
-Für die Adresse des MySQL Service können wir entweder dessen Cluster IP (`oc get service`) oder aber dessen DNS-Namen (`<service>`) verwenden. Alle Services und Pods innerhalb eines Projektes können über DNS aufgelöst werden.
+For the MySQL service address we can use either its cluster IP (`oc get service`) or its DNS name (`<service>`). All services and pods within a project can be resolved via DNS.
 
-So lautet der Wert für die Variable SPRING_DATASOURCE_URL bspw.:
+This is the value for the variable SPRING_DATASOURCE_URL for example:
 ```
-Name des Services: mysql
+Name of the service: mysql
 
 jdbc:mysql://mysql/techlab?autoReconnect=true
 ```
 
-Diese Umgebungsvariablen können wir nun in der DeploymentConfig example-spring-boot setzen. Nach dem **ConfigChange** (ConfigChange ist in der DeploymentConfig als Trigger registriert) wird die Applikation automatisch neu deployed. Aufgrund der neuen Umgebungsvariablen verbindet die Applikation an die MySQL DB und [Liquibase](http://www.liquibase.org/) kreiert das Schema und importiert die Testdaten.
+We can now set these environment variables in the DeploymentConfig example-spring-boot. After **ConfigChange** (ConfigChange is registered as a trigger in DeploymentConfig) the application is automatically deployed again. Due to the new environment variables the application connects to the MySQL DB and [Liquibase](http://www.liquibase.org/) creates the schema and imports the test data.
 
-**Note:** Liquibase ist Open Source. Es ist eine Datenbank unabhängige Library um Datenbank Änderungen zu verwalten und auf der Datenbank anzuwenden. Liquibase erkennt beim Startup der Applikation, ob DB Changes auf der Datenbank angewendet werden müssen oder nicht. Siehe Logs.
+**Note:** Liquibase is Open Source. It is a database independent library to manage database changes and apply them to the database. Liquibase recognizes at the startup of the application whether DB changes have to be applied to the database or not. See Logs.
 
 
 ```
 SPRING_DATASOURCE_URL=jdbc:mysql://mysql/techlab?autoReconnect=true
 ```
-**Note:** mysql löst innerhalb Ihres Projektes via DNS Abfrage auf die Cluster IP des MySQL Service auf. Die MySQL Datenbank ist nur innerhalb des Projektes erreichbar. Der Service ist ebenfalls über den folgenden Namen erreichbar:
+**Note:** mysql resolves within your project via DNS query to the cluster IP of the MySQL service. The MySQL database is only accessible within the project. The service is also accessible via the following name:
 
 ```
-Projektname = techlab-dockerimage
+Project name = techlab-dockerimage
 
 mysql.techlab-dockerimage.svc.cluster.local
 ```
 
-Befehl für das Setzen der Umgebungsvariablen:
+Command for setting the environment variables:
 ```
 $ oc set env dc example-spring-boot \
       -e SPRING_DATASOURCE_URL="jdbc:mysql://mysql/techlab?autoReconnect=true" \
@@ -848,7 +848,7 @@ $ oc set env dc example-spring-boot \
       -e SPRING_DATASOURCE_DRIVER_CLASS_NAME=com.mysql.jdbc.Driver
 ```
 
-Über den folgenden Befehl können Sie sich die DeploymentConfig als JSON anschauen. Neu enthält die Config auch die gesetzten Umgebungsvariablen:
+You can use the following command to view DeploymentConfig as JSON. The Config now also contains the set environment variables:
 
 ```
  $ oc get dc example-spring-boot -o json
@@ -877,17 +877,18 @@ $ oc set env dc example-spring-boot \
 ...
 ```
 
-Die Konfiguration kann auch in der Web Console angeschaut und verändert werden:
+The configuration can also be viewed and changed in the Web Console:
 
 (Applications → Deployments → example-spring-boot, Actions, Edit YAML)
 
-## Aufgabe: Secret referenzieren
+## Task: Reference Secret
 
-Weiter oben haben wir gesehen, wie OpenShift mittels Secrets sensitive Informationen von der eigentlichen Konfiguration enkoppelt und uns dabei hilft, Redundanzen zu vermeiden. Unsere Springboot Applikation aus dem vorherigen Lab haben wir zwar korrekt konfiguriert, allerings aber die Werte redundant und Plaintext in der DeploymentConfig abgelegt.
+Above we have seen how OpenShift decouples sensitive information from the actual configuration using Secrets and helps us to avoid redundancies. We configured our Springboot application from the previous lab correctly, but stored the values redundant and plaintext in DeploymentConfig.
 
-Passen wir nun die DeploymentConfig example-spring-boot so an, dass die Werte aus den Secrets verwendet werden. Zu beachten gibt es die Konfiguration der Container unter `spec.template.spec.containers`
+Now let's adjust the DeploymentConfig example-spring-boot so that the values from the Secrets are used. Note the configuration of the containers under `spec.template.spec.containers`.
 
-Mittels `oc edit dc example-spring-boot -o json` kann die DeploymentConfig als Json wie folgt bearbeitet werden.
+Using `oc edit dc example-spring-boot -o json` you can edit the DeploymentConfig as Json as follows.
+
 ```
 ...
 "env": [
@@ -922,80 +923,84 @@ Mittels `oc edit dc example-spring-boot -o json` kann die DeploymentConfig als J
 ...
 ```
 
-Nun werden die Werte für Usernamen und Passwort sowohl beim mysql Pod wie auch beim Springboot Pod aus dem selben Secret gelesen.
+Now the values for username and password for both mysql Pod and Springboot Pod are read from the same secret.
 
 
-## Aufgabe: In MySQL Service Pod einloggen und manuell auf DB verbinden
+## Task: Log in to MySQL Service Pod and connect manually to DB
 
-Es kann mittels `oc rsh [POD]` in einen Pod eingeloggt werden:
+It can be logged into a Pod using `oc rsh [POD]`:
 ```
-$ oc get pods
-NAME                           READY     STATUS             RESTARTS   AGE
-example-spring-boot-8-wkros    1/1       Running            0          10m
-mysql-1-diccy                  1/1       Running            0          50m
+$ oc get Pods
+NAME READY STATUS STARTS NEW OLD
+example-spring-boot-8-wkros 1/1 running 0 10m
+mysql-1-diccy 1/1 Running 0 50m
 
 ```
 
-Danach in den MySQL Pod einloggen:
+Then log in to the MySQL Pod:
 ```
 $ oc rsh mysql-1-diccy
 ```
 
-Nun können Sie mittels mysql Tool auf die Datenbank verbinden und die Tabellen anzeigen:
+Now you can use mysql tool to connect to the database and display the tables:
+
 ```
 $ mysql -u$MYSQL_USER -p$MYSQL_PASSWORD -h$MYSQL_SERVICE_HOST techlab
-Welcome to the MySQL monitor.  Commands end with ; or \g.
-Your MySQL connection id is 54
-Server version: 5.6.26 MySQL Community Server (GPL)
+Willkommen beim MySQL-Monitor.  Befehle enden mit ; oder \g.
+Deine MySQL-Verbindungs-ID ist 54.
+Server-Version: 5.6.26 MySQL Community Server (GPL)
 
-Copyright (c) 2000, 2015, Oracle and/or its affiliates. All rights reserved.
+Copyright (c) 2000, 2015, Oracle und/oder seine verbundenen Unternehmen. Alle Rechte vorbehalten.
 
-Oracle is a registered trademark of Oracle Corporation and/or its
-affiliates. Other names may be trademarks of their respective
-owners.
+Oracle ist eine eingetragene Marke der Oracle Corporation und/oder ihrer Tochtergesellschaften.
+verbundene Unternehmen. Andere Namen können Marken der jeweiligen Unternehmen sein.
+Besitzer.
 
-Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+Tippen Sie "help;" oder "\h" für Hilfe. Geben Sie'\c' ein, um die aktuelle Eingabeaufforderung zu löschen.
 
 mysql>
 ```
 
-Anschliessend können Sie mit
+Afterwards you can with the following command:
+
 ```
 show tables;
 ```
 
-alle Tabellen anzeigen.
+Display all tables.
 
 
-## Aufgabe: Dump auf MySQL DB einspielen
+## Task: Import dump to MySQL DB
 
-Die Aufgabe ist es, in den MySQL Pod den [Dump](https://raw.githubusercontent.com/appuio/techlab/lab-3.3/labs/data/08_dump/dump.sql) einzuspielen.
+The task is to import the [Dump](https://raw.githubusercontent.com/appuio/techlab/lab-3.3/labs/data/08_dump/dump.sql) into the MySQL Pod.
 
 
-**Tipp:** Mit `oc rsync` können Sie lokale Dateien in einen Pod kopieren. Alternativ kann auch curl im mysql container verwendet werden.
+**Tip:** Use `oc rsync` to copy local files to a Pod. Alternatively you can use curl in the mysql container.
 
-**Achtung:** Beachten Sie, dass dabei der rsync-Befehl des Betriebssystems verwendet wird. Auf UNIX-Systemen kann rsync mit dem Paketmanager, auf Windows kann bspw. [cwRsync](https://www.itefix.net/cwrsync) installiert werden. Ist eine Installation von rsync nicht möglich, kann stattdessen bspw. in den Pod eingeloggt und via `curl -O <URL>` der Dump heruntergeladen werden.
+**Note:** Note that this uses the rsync command of the operating system. On UNIX systems rsync can be installed with the package manager, on Windows for example [cwRsync](https://www.itefix.net/cwrsync) can be installed. If an installation of rsync is not possible, you can log into the Pod instead and download the dump via `curl -O <URL>`.
 
-**Tipp:** Verwenden Sie das Tool mysql um den Dump einzuspielen.
+**Tip:** Use the mysql tool to install the dump.
 
-**Tipp:** Die bestehende Datenbank muss vorgängig leer sein. Sie kann auch gelöscht und neu angelegt werden.
+**Tip:** The existing database must be empty. It can also be deleted and recreated.
 
 
 ---
 
-## Lösung
+## Solution
 
-Ein ganzes Verzeichnis (dump) syncen. Darin enthalten ist das File `dump.sql`. Beachten Sie zum rsync-Befehl auch obenstehenden Tipp sowie den fehlenden trailing slash.
+Sync an entire directory (dump). It contains the file `dump.sql`. For the rsync command, also note the above tip and the missing trailing slash.
+
 ```
 oc rsync ./labs/data/08_dump mysql-1-diccy:/tmp/
 ```
-In den MySQL Pod einloggen:
+
+Log in to the MySQL Pod:
 
 ```
 $ oc rsh mysql-1-diccy
 ```
 
-Bestehende Datenbank löschen:
+Delete existing database:
 ```
 $ mysql -u$MYSQL_USER -p$MYSQL_PASSWORD -h$MYSQL_SERVICE_HOST techlab
 ...
@@ -1003,19 +1008,18 @@ mysql> drop database techlab;
 mysql> create database techlab;
 mysql> exit
 ```
-Dump einspielen:
+Dump in:
 ```
 $ mysql -u$MYSQL_USER -p$MYSQL_PASSWORD -h$MYSQL_SERVICE_HOST techlab < /tmp/08_dump/dump.sql
 ```
 
-**Note:** Den Dump kann man wie folgt erstellen:
+**Note: The dump can be created as follows:
 
 ```
 mysqldump --user=$MYSQL_USER --password=$MYSQL_PASSWORD --host=$MYSQL_SERVICE_HOST techlab > /tmp/dump.sql
 ```
 # Bonus - Integration Webhook
 
-Die initiale ruby-ex Applikation ist auch in gogs gehostet. Machen sie einen Fork von der Applikation und integrieren sie den Webhook des Builds in das Projekt.
+The initial ruby-ex application is also hosted in gogs. Make a fork of the application and integrate the webhook of the build into the project.
 
-Wenn du nun Änderungen am Code durchführst, dann wird ein Build angestosen und die neue Version wird verfügbar.
-
+If you now make changes to the code, a build will be started and the new version will be available.

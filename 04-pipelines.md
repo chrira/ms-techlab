@@ -1,6 +1,6 @@
 # Pipelines and Jenkins on OpenShift
 
-OpenShift comes with a Jenkins image that is opiniated and preconfigured to allows jobs to be scheduled on the Kubernetes cluster. Moreover, the following features all together create a very good user experience when using Jenkins together with OpenShift:
+OpenShift comes with a Jenkins image that is opiniated and preconfigured to allow jobs to be scheduled on the Kubernetes cluster. Moreover, the following features all together create a very good user experience when using Jenkins together with OpenShift:
 
 - Jenkins is configured for OAuth2 based Authentication and Authorization towards Openshift
 - Jenkins can schedule slave pods with different build tools on demand
@@ -25,7 +25,7 @@ The Pipeline build strategy can be used to implement sophisticated workflows:
 
 The Pipeline build strategy allows developers to define a [Jenkins pipeline](https://jenkins.io/doc/pipeline/) for execution by the Jenkins pipeline plugin. The build can be started, monitored, and managed by OpenShift Container Platform in the same way as any other build type.
 
-Pipeline workflows are defined in a Jenkinsfile, either embedded directly in the build configuration, or supplied in a Git repository and referenced by the build configuration.
+Pipeline workflows are defined in a Jenkinsfile, either embedded directly in the pipeline configuration, or supplied in a Git repository and referenced by the pipeline configuration.
 
 ## First pipeline
 
@@ -50,8 +50,6 @@ Now copy the url from this route, in this case *jenkins-cicd-userXY.apps.zurich-
 The first time you hit a OpenShift Jenkins with a specific user, you might get a Jenkins screen asking for authorization permissions.
 See the image below.
 ![Jenkins OAuth2 permissions](data/images/jenkins_oauth2_permissions.png "Jenkins OAuth2 permissions")
-
-
 
 
 Accept these and go to the next screen, by clicking on 'Alow selected permissions'.

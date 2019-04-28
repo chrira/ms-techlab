@@ -26,7 +26,7 @@ Explore the different resources created by the new-app command.
 
 To access the built and deployed application we must expose it as a route. We can do that by issuing the following command:
 
-    oc create route edge --service=ruby-ex
+    oc create route edge --insecure-policy=Allow --service=ruby-ex
 
 By describing the route, we can get the URL that serves your built ruby application. Access it through your browser. You find the URL as well in the web console. Inspect your application there as well.
 
@@ -68,7 +68,7 @@ Command with output:
 
 ```bash
 $ oc new-build --docker-image=openshift/wildfly-160-centos7 --binary=true --name=hello-world -l app=hello-world
---> Found Docker image 5b42148 (5 days old) from Docker Hub for "openshift/wildfly-160-centos7"
+--> Found Docker image 5b42148 (6 weeks old) from Docker Hub for "openshift/wildfly-160-centos7"
 
     WildFly 16.0.0.Final 
     -------------------- 
@@ -122,7 +122,7 @@ Try to find out, if the wildfly has started.
 ### Expose the service as route
 
 ```bash
-oc create route edge --service=hello-world
+oc create route edge --insecure-policy=Allow --service=hello-world
 ```
 
 Inside the web console click onto the route to see the output of the hello-world application.
@@ -144,7 +144,7 @@ Create an app with that image and expose it:
 
 ```bash
 oc new-app httpd -l app=httpd
-oc create route edge --service=httpd
+oc create route edge --insecure-policy=Allow --service=httpd
 ```
 
 Now let's try to add an easter egg in /egg.txt with a new build. How would you do this and where should it be done?

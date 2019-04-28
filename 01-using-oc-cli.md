@@ -1,6 +1,10 @@
 # Using oc cli
 
-Log into the Webconsole: [api.0xshift.dev](https://api.0xshift.dev) and get familiar with the interface.
+Log into the Webconsole: [master.six-zh-522a.openshiftworkshop.com](https://master.six-zh-522a.openshiftworkshop.com) and get familiar with the interface.
+
+Additionally, also visit the metrics URL to accept the certificate. This will make the application metrics appear automatically in the ui: https://hawkular-metrics.apps.six-zh-522a.openshiftworkshop.com/hawkular/metrics - There is not much to see on that URL, but your browser must accept the certificate.
+
+Ok, let's move over to do something:
 
 Create a new project from the webui called:
 
@@ -10,7 +14,7 @@ Create a new project from the webui called:
 
 Copy the login command from the Webconsole (did you find this option? -> in the menu on the right hand side).
 
-    oc login https://api.0xshift.dev:443 --token=XYZ
+    oc login https://master.six-zh-522a.openshiftworkshop.com:443 --token=XYZ
     oc whoami
 
 The token allows you to have a logged in session and can be used to do logins from the cli (on the API), without doing the authentication there.
