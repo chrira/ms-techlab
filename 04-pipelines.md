@@ -493,7 +493,7 @@ pipeline {
 
 If you create a pipeline on OpenShift, it will automatically get synced with Jenkins back. When a pipeline is created directly on Jenkins however, it will not appear under OpenShift pipelines automatically.
 
-###Step X
+### Step X
 
 Now that you know the basic knowhow about using Jenkins on OpenShift you might want to tackle more complex scenarios.
 #### A/B deployments:
@@ -517,11 +517,11 @@ Go ahead and see if you can implement a pipeline for blue/greed deployment yours
 
 ## General tips and tricks
 
-###Slaves with PVs
+### Slaves with PVs
 
 Jenkins slaves which run as Pods are by default stateless i.e. if there are artifacts or other binaries that you would like to keep even when a Pod gets restarted, Persistent Volumes should be used. Make sure that artifact folder used by maven is on the persistent volume. To force maven to use a specific folder,  you can configure mvn on the fly via: ``` mvn -Dmaven.repo.local=$HOME/.my/other/repository clean install ``` or via  the *setting.xml* file.
 
-###Slave retention/idle time
+### Slave retention/idle time
 
  Jenkins slave that are created on demand will be terminated after they are done building jobs and sometimes you want to keep slaves around even when they are not doing any work so that you don't need to wait until a slave is created and registered on Jenkins master. 
  The retention policy and  setting ***Time in minutes to retain agent when idle*** which is listed under 'Kubernetes Pod Template', can be used to control how long you keep unused/idle slaves around.
