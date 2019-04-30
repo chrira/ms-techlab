@@ -316,6 +316,7 @@ Run the build again and this time build should succeed. The new build should als
 
 
 ### Step 4
+
 Next step is to tag the image that was just built but before that let's trigger a new deployment and add a simple to test to verify that software works as expected.
 
 Embed the *step* below into the pipeline to add a simple testing mechanism. A simple curl call is made and its HTTP return status code is checked after having a deployed the latest version of the app.
@@ -492,14 +493,17 @@ pipeline {
 If you create a pipeline on OpenShift, it will automatically get synced with Jenkins back. When a pipeline is created directly on Jenkins however, it will not appear under OpenShift pipelines automatically.
 
 ###Step X
+
 Now that you know the basic knowhow about using Jenkins on OpenShift you might want to tackle more complex scenarios.
 #### A/B deployments:
+
 The A/B deployment strategy lets you try a new version of the application in a limited way in the production environment. You can specify that the production version gets most of the user requests while a limited fraction of requests go to the new version. Since you control the portion of requests to each version, as testing progresses you can increase the fraction of requests to the new version and ultimately stop using the previous version.  See [here](https://docs.openshift.com/container-platform/3.11/dev_guide/deployments/advanced_deployment_strategies.html#advanced-deployment-a-b-deployment) for more details.
 
 
 In a nutshell: Have 2 deploymentconfigs which use different versions of container images and have 2 services each of which points to a specific deploymentconfig. Read [this link](https://docs.openshift.com/container-platform/3.11/architecture/networking/routes.html#alternateBackends) to see how you can loadbalance incoming traffic to diffferent services.
 
 #### Blue / Green deployments
+
 Martin Fowler defines Blue/Green deployments so:
 >One of the challenges with automating deployment is the cut-over itself, taking software from the final stage of testing to live production. You usually need to do this quickly in order to minimize downtime. The blue-green deployment approach does this by ensuring you have two production environments, as identical as possible. At any time one of them, let's say blue for the example, is live. As you prepare a new release of your software you do your final stage of testing in the green environment. Once the software is working in the green environment, you switch the router so that all incoming requests go to the green environment - the blue one is now idle. 
 
@@ -513,14 +517,17 @@ Go ahead and see if you can implement a pipeline for blue/greed deployment yours
 ## General tips and tricks
 
 ###Slaves with PVs
+
 Jenkins slaves which run as Pods are by default stateless i.e. if there are artifacts or other binaries that you would like to keep even when a Pod gets restarted, Persistent Volumes should be used. Make sure that artifact folder used by maven is on the persistent volume. To force maven to use a specific folder,  you can configure mvn on the fly via: ``` mvn -Dmaven.repo.local=$HOME/.my/other/repository clean install ``` or via  the *setting.xml* file.
 
 ###Slave retention/idle time
+
  Jenkins slave that are created on demand will be terminated after they are done building jobs and sometimes you want to keep slaves around even when they are not doing any work so that you don't need to wait until a slave is created and registered on Jenkins master. 
  The retention policy and  setting ***Time in minutes to retain agent when idle*** which is listed under 'Kubernetes Pod Template', can be used to control how long you keep unused/idle slaves around.
 ![Slave Pod retention](data/images/pod_retention.png "Slave Pod retention")
  
 ### OpenShift Jenkins Sync
+
 [Openshift-jenkins-sync-plugin](https://github.com/openshift/jenkins-sync-plugin/blob/master/README.md) can sync objects such as Secrets,ConfigMaps from OpenShift projects onto Jenkins. This is a very powerful feature and it's also the main enabler of pipeline strategy builds. One typical use case is to keep credentials such git ssh keys as secrets and have Jenkins sync them so that these credentials can be used in build jobs.
 
 For syncing secrets make sure that secrets are labeled accordingly. E.g. :```  oc label secret jboss-eap-quickstarts-github-key credential.sync.jenkins.openshift.io=true```
@@ -528,6 +535,7 @@ For syncing secrets make sure that secrets are labeled accordingly. E.g. :```  o
 
 
 ### OpenShift Client Plugins
+
 Jenkins slaves/masters can run on one cluster and they can interact with other clusters. See [jenkins-client-plugin](https://github.com/openshift/jenkins-client-plugin) for details.
 In order to address multiple clusters, first configure them on Jenkins via *Manage Jenkins-> Configure Systems->OpenShift Jenkins Sync* as shown in image below.
 ![Jenkins sync plugin](data/images/jenkins_sync.png "Jenkins sync plugin")
@@ -535,6 +543,7 @@ In order to address multiple clusters, first configure them on Jenkins via *Mana
 Using the declarative pipeline, specific clusters can be targeted using `openshift.withCluster` notation.
 
 ### Openshift rights
+
 All pods on OpenShift run with a ServiceAccount and the service account that 'runs' a job should have the rights set up according to what actions it aims to execute on the target namespace/project.
 
 ```
