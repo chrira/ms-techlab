@@ -249,7 +249,7 @@ Now that there is an artifact, namely a jar file that we would like to run, we n
 ```
 oc project app-dev-userXY
 oc new-build java --name=spring-app   --binary=true
-oc new-app spring-app
+oc new-app spring-app --allow-missing-imagestream-tags
 oc patch dc/spring-app -p '{"spec":{"triggers":[]}}'
 oc patch dc spring-app --type=json  -p '[{"op": "replace", "path": "/spec/template/spec/containers/0/readinessProbe", "value": { "failureThreshold": 3, "httpGet": { "path": "/pod", "port": 8080, "scheme": "HTTP" }, "initialDelaySeconds": 10, "periodSeconds": 10, "successThreshold": 1, "timeoutSeconds": 30 }}]'
 oc expose svc/spring-app
