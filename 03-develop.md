@@ -11,10 +11,10 @@ Nachdem wir im vorher den Source-to-Image Workflow, wie auch ein Binary und Dock
 
 Als ersten Schritt erstellen wir dafür ein neues Projekt. Ein Projekt ist eine Gruppierung von Ressourcen (Container und Docker Images, Pods, Services, Routen, Konfiguration, Quotas, Limiten und weiteres). Für das Projekt berechtigte User können diese Ressourcen verwalten. Innerhalb eines OpenShift Clusters muss der Name eines Projektes eindeutig sein.
 
-Erstellen Sie daher ein neues Projekt mit dem Namen `develop-userXY`:
+Erstellen Sie daher ein neues Projekt mit dem Namen `userXY-develop`:
 
-```
-$ oc new-project develop-userXY
+```bash
+$ oc new-project userXY-develop
 ```
 
 `oc new-project` wechselt automatisch in das eben neu angelegte Projekt. Mit dem `oc get` Command können Ressourcen von einem bestimmten Typ angezeigt werden.
@@ -73,7 +73,7 @@ $ oc get pods -w
 Je nach Internetverbindung oder abhängig davon, ob das Image auf Ihrem OpenShift Node bereits heruntergeladen wurde, kann das eine Weile dauern. Schauen Sie sich doch in der Web Console den aktuellen Status des Deployments an:
 
 1. Loggen Sie sich in der Web Console ein
-2. Wählen Sie Ihr Projekt `develop-userXY` aus
+2. Wählen Sie Ihr Projekt `userXY-develop` aus
 3. Klicken Sie auf Applications
 4. Wählen Sie Pods aus
 
@@ -258,7 +258,7 @@ Aktuell werden folgende Protokolle unterstützt:
 
 ## Aufgabe
 
-Vergewissern Sie sich, dass Sie sich im Projekt `develop-userXY` befinden. **Tipp:** `oc project develop-userXY`
+Vergewissern Sie sich, dass Sie sich im Projekt `userXY-develop` befinden. **Tipp:** `oc project userXY-develop`
 
 Erstellen Sie für den Service `example-spring-boot` eine Route und machen Sie ihn darüber öffentlich verfügbar.
 
@@ -309,7 +309,7 @@ In diesem Lab zeigen wir auf, wie man Applikationen in OpenShift skaliert. Des W
 Dafür verwenden wir das vorherige Projekt
 
 ```
-$ oc project develop-userXY
+$ oc project userXY-develop
 ```
 
 Wenn wir unsere Example Applikation skalieren wollen, müssen wir unserem ReplicationController (rc) mitteilen, dass wir bspw. stets 3 Replicas des Images am Laufen haben wollen.
@@ -688,7 +688,7 @@ In der Webconsole ist gut zu Beobachten, wie der Pod zuerst hellblau ist, bis di
 
 Die meisten Applikationen sind in irgend einer Art stateful und speichern Daten persistent ab. Sei dies in einer Datenbank oder als Files auf einem Filesystem oder Objectstore. In diesem Lab werden wir in unserem Projekt einen MySQL Service anlegen und an unsere Applikation anbinden, sodass mehrere Applikationspods auf die gleiche Datenbank zugreifen können.
 
-Für dieses Beispiel verwenden wir das Spring Boot Beispiel `develop-userxy`. **Tipp:** `oc project develop-userxy`
+Für dieses Beispiel verwenden wir das Spring Boot Beispiel `userXY-develop`. **Tipp:** `oc project userXY-develop`
 
 ## Aufgabe: MySQL Service anlegen
 

@@ -11,7 +11,7 @@ To be able to consume an operator we will create a subscription within a project
 Create project:
 
 ```bash
-oc new-project operator-userXY
+oc new-project userXY-operator
 ```
 
 Subscribe to the etcd operator, by creating a file called `etcd-subscription.yaml` with the following content:
@@ -22,7 +22,7 @@ apiVersion: operators.coreos.com/v1alpha1
 kind: Subscription
 metadata:
   generateName: etcd-
-  namespace: operator-userXY
+  namespace: userXY-operator
   name: etcd
 spec:
   source: rh-operators

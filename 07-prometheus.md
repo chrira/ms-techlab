@@ -3,7 +3,7 @@
 ## Create a new project
 
 ```bash
-oc new-project prometheus-userXY
+oc new-project userXY-prometheus
 ```
 
 ## deploy example app
@@ -77,7 +77,7 @@ spec
 ```
 
 Check the changes on the targets view of Prometheus (Status -> Targets):
-https://prometheus-prometheus-userXY.apps.0xshift.dev/targets
+https://prometheus-userXY-prometheus.apps.0xshift.dev/targets
 
 Is the prometheus-app pod visible? Is it UP?
 

@@ -3,7 +3,7 @@
 Deploy your own version of coolstore
 
 ```
-oc new-project coolstore-userXY
+oc new-project userXY-coolstore
 oc process -f https://raw.githubusercontent.com/jbossdemocentral/coolstore-microservice/stable-ocp-3.11/openshift/coolstore-template.yaml | oc create -f -
 oc status
 ```

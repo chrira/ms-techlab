@@ -16,7 +16,7 @@ It creates all the necessary Build Configs, deployment configs and even automati
 
 Our example is based on a very simple Ruby application hosted on the internal gogs server.
 
-    oc new-project s2i-userXY
+    oc new-project userXY-s2i
     oc new-app -h
     oc new-app ruby:2.5~http://gogs.apps.0xshift.dev/ocpadmin/ruby-ex.git
     oc status
@@ -33,7 +33,7 @@ The example is inspired by APPUiO blog: <http://docs.appuio.ch/en/latest/app/wil
 ### Create a new project
 
 ```bash
-oc new-project binary-build-userXY
+oc new-project userXY-binary-build
 ```
 
 ### Create the deployment folder structure
@@ -129,7 +129,7 @@ We can also create arbitrary containers based on Dockerfiles.
 Command:
 
 ```bash
-oc new-project docker-build-userXY
+oc new-project userXY-docker-build
 oc new-build --strategy=docker http://gogs.apps.0xshift.dev/ocpadmin/httpd.git
 ```
 

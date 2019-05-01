@@ -4,7 +4,7 @@ In diesem Lab wird aufgezeigt, wie man im Fehlerfall und Troubleshooting vorgehe
 
 ## In Container einloggen
 
-Wir verwenden dafür wieder das Projekt `develop-userxy`. **Tipp:** `oc project develop-userxy`
+Wir verwenden dafür wieder das Projekt `userXY-develop`. **Tipp:** `oc project userXY-develop`
 
 Laufende Container werden als unveränderbare Infrastruktur behandelt und sollen generell nicht modifiziert werden. Dennoch gibt es Usecases, bei denen man sich in die Container einloggen muss. Zum Beispiel für Debugging und Analysen.
 
@@ -87,8 +87,8 @@ OpenShift 3 erlaubt es, beliebige Ports von der Entwicklungs-Workstation auf ein
 Übung: Auf die Spring Boot Metrics zugreifen.
 
 ```
-oc get pod --namespace="develop-userxy"
-oc port-forward example-spring-boot-1-xj1df 9000:9000 --namespace="develop-userxy"
+oc get pod --namespace="userXY-develop"
+oc port-forward example-spring-boot-1-xj1df 9000:9000 --namespace="userXY-develop"
 ```
 
 Nicht vergessen den Pod Namen an die eigene Installation anzupassen. Falls installiert kann dafür Autocompletion verwendet werden.
@@ -109,7 +109,7 @@ In einer früheren Aufgabe haben wir für die ROlling update Strategie einen Rea
 In diesem Beispiel werden wir eine Applikation automatisierte hoch und runter skalieren, je nach dem unter wieviel Last die Applikation steht. Dazu verwenden wir unsere alt bekannte Ruby example webapp.
 
 ```
-oc new-project autoscale-userXY
+oc new-project userXY-autoscale
 ```
 
 Auf dem Branch load gibt es einen CPU intensiven Endpunkt, welchen wir für unsere Tests verwenden werden. Dafür starten wir die App auf diesem Branch:
@@ -151,7 +151,7 @@ oc autoscale dc ruby-ex --min 1 --max 3 --cpu-percent=25
 Nun können wir auf dem Service Last erzeugen:
 
 ```bash
-for i in {1..500}; do curl -s  https://ruby-ex-autoscale-userXY.apps.0xshift.dev/load ; done;
+for i in {1..500}; do curl -s  https://ruby-ex-userXY-autoscale.apps.0xshift.dev/load ; done;
 ```
 
 Die aktuellen Werte können wir über:

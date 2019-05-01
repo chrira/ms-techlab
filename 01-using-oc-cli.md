@@ -1,10 +1,10 @@
 # Using oc cli
 
-Log into the Webconsole: [api.0xshift.dev](https://api.0xshift.dev) and get familiar with the interface.
+Log into the web console and get familiar with the interface.
 
-Create a new project from the webui called:
+Create a new project from the web console called:
 
-    webui-userXY
+    userXY-webui
 
 ## Log in on the cli
 
@@ -27,7 +27,7 @@ oc cli features a help output, as well as more detailed help for each command:
 
 ## Create a new project on the cli
 
-Create a project called `cli-userXY`
+Create a project called `userXY-cli`
 
 You can get help by
 
@@ -39,9 +39,9 @@ We are immediately switched to our project:
 
 We can inspect our project by either describing it or getting a yaml (or json) formatted output of our created project.
 
-    oc describe project cli-userXY
-    oc get project webui-userXY -o yaml
-    oc get project webui-userXY -o json
+    oc describe project userXY-cli
+    oc get project userXY-webui -o yaml
+    oc get project userXY-webui -o json
 
 ## Adding users to a project
 
@@ -57,7 +57,7 @@ To see all the active roles in your current project you can type:
 
 For your webui project:
 
-    oc describe rolebinding.rbac -n webui-userXY
+    oc describe rolebinding.rbac -n userXY-webui
 
 We can mange roles by issuing oc adm policy commands:
 
@@ -72,7 +72,7 @@ Let's add this group as an admin role to our current project, so we can co-devel
 
 Too much privileges? At least for our webui projects, so let's add folks there only as viewer:
 
-    oc adm policy add-role-to-group view techlab -n webui-userXY
+    oc adm policy add-role-to-group view techlab -n userXY-webui
 
 How many others did add us to their projects? Let's see by get the current list of projects:
 
@@ -101,13 +101,13 @@ You can also edit them:
 
 For example let's edit our webui project:
 
-    oc edit project webui-userXY
+    oc edit project userXY-webui
 
 ## Deleting resources
 
 Not happy about how things went in your current projects and want to start over?
 
-    oc delete project webui-userXY
+    oc delete project userXY-webui
 
 This will delete all resources bundled by this project. Projects are really an easy way to try things out and once you are done easily clean it up.
 
