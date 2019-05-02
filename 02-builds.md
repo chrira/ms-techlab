@@ -12,18 +12,28 @@ Let's have a look at the different kinds of builds
 
 Simplest way of getting started from a code base (e.g. Ruby, Python, PHP) to a running application bundled with all the dependencies.
 
-It creates all the necessary Build Configs, deployment configs and even automatically exposes the application on a route.
+It creates all the necessary build configs, deployment configs and even automatically exposes the application on a route.
 
-Our example is based on a very simple Ruby application hosted on the internal gogs server.
+First, create a project with the name `userXY-s2i`
+<details><summary>create project command</summary>oc new-project userXY-s2i</details><br/>
 
-    oc new-project userXY-s2i
+Our example is based on a very simple PHP application hosted on APPUiO GitHub.
+Create an app with the name s2i from this repository: <https://github.com/appuio/example-php-sti-helloworld.git>
+
+Hint for the command help:
+
     oc new-app -h
-    oc new-app ruby:2.5~http://gogs.apps.0xshift.dev/ocpadmin/ruby-ex.git
-    oc status
 
+<details><summary>create app command</summary>oc new-app https://github.com/appuio/example-php-sti-helloworld.git --name=s2i</details><br/>
+
+Check the status of your project.
+<details><summary>project status command</summary>oc status</details><br/>
 
 Explore the different resources created by the new-app command.
 
+To see something in the browser, create a route to access the application:
+
+    oc create route edge --service=s2i
 
 ## Binary build
 
@@ -32,9 +42,8 @@ The example is inspired by APPUiO blog: <http://docs.appuio.ch/en/latest/app/wil
 
 ### Create a new project
 
-```bash
-oc new-project userXY-binary-build
-```
+Create a project with the name `userXY-binary-build`
+<details><summary>create project command</summary>oc new-project userXY-binary-build</details><br/>
 
 ### Create the deployment folder structure
 
@@ -46,10 +55,17 @@ One or more war can be placed in the deployments folder. In this example an exis
 mkdir tmp-bin
 cd tmp-bin
 mkdir deployments
-wget -O deployments/ROOT.war http://gogs.apps.0xshift.dev/ocpadmin/techlab/raw/master/data/hello-world-war-1.0.0.war
+wget -O deployments/ROOT.war 'https://github.com/appuio/hello-world-war/blob/master/repo/ch/appuio/hello-world-war/1.0.0/hello-world-war-1.0.0.war?raw=true'
 ```
 
 ### Create a new build using the Wildfly image
+
+Create a build configuration for a binary build with following attributes:
+
+* base Docker image: `openshift/wildfly-160-centos7`
+* name: `hello-world`
+* label: `app=hello-world`.
+* type: `binary`
 
 The flag *binary=true* indicates that this build will use the binary content instead of the url to the source code.
 
@@ -89,8 +105,7 @@ Check the created resources with the oc tool and inside the web console.
 
 ## Start the build
 
-To trigger a build issue the command below. In a continuous deployment process this command can be repeated
-whenever there is a new binary or a new configuration available.
+To trigger a build issue the command below. In a continuous deployment process this command can be repeated whenever there is a new binary or a new configuration available.
 
 The core feature of the binary build is to provide the files for the build from the local directory.
 Those files will be loaded into the build container that runs inside OpenShift.
