@@ -141,10 +141,12 @@ Inside the web console click onto the route to see the output of the hello-world
 
 We can also create arbitrary containers based on Dockerfiles.
 
-Command:
+First, create a project with the name `userXY-docker-build`
+<details><summary>create project command</summary>oc new-project userXY-docker-build</details><br/>
+
+Command to create a Docker build:
 
 ```bash
-oc new-project userXY-docker-build
 oc new-build --strategy=docker http://gogs.apps.0xshift.dev/ocpadmin/httpd.git
 ```
 
