@@ -147,7 +147,13 @@ First, create a project with the name `userXY-docker-build`
 Command to create a Docker build:
 
 ```bash
-oc new-build --strategy=docker http://gogs.apps.0xshift.dev/ocpadmin/httpd.git
+oc new-build --strategy=docker --binary=true --name=web -l app=web centos/httpd-24-centos7
+```
+
+Start the build with the data from `labs/data/02_httpd`:
+
+```bash
+oc start-build web --from-dir=labs/data/02_httpd --follow
 ```
 
 Follow how the build goes and if the image will be present in your registry.
@@ -155,8 +161,11 @@ Follow how the build goes and if the image will be present in your registry.
 Create an app with that image and expose it:
 
 ```bash
-oc new-app httpd -l app=httpd
-oc create route edge --service=httpd
+oc new-app web -l app=web
+oc create route edge --service=web -l app=web
 ```
 
-Now let's try to add an easter egg in /egg.txt with a new build.
+Now let's try to add an easter egg in /easter-egg.txt with a new build.
+Inspect `labs/data/02_httpd` for a hint.
+
+<details><summary>solution</summary>add a copy command to the Dockerfile to copy the file easter-egg.txt to /var/www/html/</details><br/>
