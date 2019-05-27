@@ -168,4 +168,11 @@ oc create route edge --service=web
 Now let's try to add an easter egg in /easter-egg.txt with a new build.
 Inspect `labs/data/02_httpd` for a hint.
 
-<details><summary>solution</summary>add a copy command to the Dockerfile to copy the file easter-egg.txt to /var/www/html/</details><br/>
+<details>
+    <summary>solution</summary>
+    add a copy command to the Dockerfile to copy the file easter-egg.txt to /var/www/html/ :<br/>
+    ...<br/>
+    COPY ./easter-egg.txt /var/www/html/<br/>
+    ...<br/>
+    start a new build
+</details>
