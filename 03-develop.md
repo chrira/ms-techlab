@@ -326,11 +326,8 @@ In diesem Lab zeigen wir auf, wie man Applikationen in OpenShift skaliert. Des W
 
 ## Example Applikation hochskalieren
 
-Dafür verwenden wir das vorherige Projekt
-
-```bash
-oc project userXY-develop
-```
+Dafür verwenden wir das vorherige Projekt `userXY-develop`
+<details><summary>Tipp</summary>oc project userXY-develop</details><br/>
 
 Wenn wir unsere Example Applikation skalieren wollen, müssen wir unserem ReplicationController (rc) mitteilen, dass wir bspw. stets 3 Replicas des Images am Laufen haben wollen.
 
@@ -750,10 +747,11 @@ MySQL Service mit Hilfe des exportierten Templates (Datei) mit den erforderliche
 
 ```bash
 oc process \
-  -pMYSQL_USER=techlab  \
-  -pMYSQL_PASSWORD=techlab  \
-  -pMYSQL_DATABASE=techlab  \
-  -f mysql-persistent.yml  \
+  -pMYSQL_USER=techlab \
+  -pMYSQL_PASSWORD=techlab \
+  -pMYSQL_DATABASE=techlab \
+  -pVOLUME_CAPACITY=256Mi \
+  -f mysql-persistent.yml \
 | oc create -f -
 ```
 
@@ -769,6 +767,7 @@ deploymentconfig.apps.openshift.io/mysql created
 ### Web Console
 
 In der Web Console kann der MySQL (Ephemeral) Service via Catalog dem Projekt hinzugefügt werden. Dazu oben rechts auf *Add to Project*, *Browse Catalog* klicken und anschliessend unter dem Reiter *Databases* *MySQL* und *MySQL (Ephemeral)* auswählen.
+Die selben Parameter setzen, wie im obigen create Befehl.
 
 ### Passwort und Username als Plaintext?
 
