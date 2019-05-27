@@ -4,7 +4,8 @@ In diesem Lab wird aufgezeigt, wie man im Fehlerfall und Troubleshooting vorgehe
 
 ## In Container einloggen
 
-Wir verwenden dafür wieder das Projekt `userXY-develop`. **Tipp:** `oc project userXY-develop`
+Wir verwenden dafür wieder das Projekt `userXY-develop`.
+<details><summary>Tipp</summary>oc project userXY-develop</details><br/>
 
 Laufende Container werden als unveränderbare Infrastruktur behandelt und sollen generell nicht modifiziert werden. Dennoch gibt es Usecases, bei denen man sich in die Container einloggen muss. Zum Beispiel für Debugging und Analysen.
 
@@ -13,13 +14,14 @@ Laufende Container werden als unveränderbare Infrastruktur behandelt und sollen
 Mit OpenShift können Remote Shells in die Pods geöffnet werden ohne dass man darin vorgängig SSH installieren müsste. Dafür steht einem der Befehl `oc rsh` zur Verfügung.
 
 Wählen Sie mittels `oc get pods` einen Pod aus und führen Sie den folgenden Befehl aus:
-```
-$ oc rsh [POD]
+
+```bash
+oc rsh [POD]
 ```
 
 Sie können nun über diese Shell Analysen im Container ausführen:
 
-```
+```bash
 bash-4.2$ ls -la
 total 16
 drwxr-xr-x. 7 default root   99 May 16 13:35 .
@@ -37,10 +39,9 @@ drwxr-xr-x. 4 root    root   28 May 16 13:34 src
 
 Einzelne Befehle innerhalb des Containers können über `oc exec` ausgeführt werden:
 
+```bash
+oc exec [POD] env
 ```
-$ oc exec [POD] env
-```
-
 
 ```bash
 $ oc exec example-spring-boot-4-8mbwe env
@@ -58,16 +59,16 @@ KUBERNETES_PORT_53_TCP=tcp://172.30.0.1:53
 
 Die Logfiles zu einem Pod können sowohl in der Web Console als auch auch im CLI angezeigt werden.
 
-```
-$ oc logs [POD]
+```bash
+oc logs [POD]
 ```
 
 Der Parameter `-f` bewirkt analoges Verhalten wie `tail -f`
 
 Befindet sich ein Pod im Status **CrashLoopBackOff** bedeutet dies, dass er auch nach wiederholtem Restarten nicht erfolgreich gestartet werden konnte. Die Logfiles können auch wenn der Pod nicht läuft mit dem folgenden Befehl angezeigt werden.
 
- ```
-$ oc logs -p [POD]
+```bash
+oc logs -p [POD]
 ```
 
 Mit OpenShift wird ein EFK (Elasticsearch, Fluentd, Kibana) Stack mitgeliefert, der sämtliche Logfiles sammelt, rotiert und aggregiert. Kibana erlaubt es Logs zu durchsuchen, zu filtern und grafisch aufzubereiten.
@@ -101,14 +102,13 @@ Unter folgendem Link sind weiterführende Informationen zu Port Forwarding zu fi
 
 ## Aufgabe 2: Readyness check
 
-In einer früheren Aufgabe haben wir für die ROlling update Strategie einen Readyness check auf einen /health eingerichtet. Dieser Endpoint war über die Route nicht erreichbar. Wie kann der endpoint nun erreicht werden?
-
+In einer früheren Aufgabe haben wir für die Rolling update Strategie einen Readyness check auf einen /health eingerichtet. Dieser Endpoint war über die Route nicht erreichbar. Wie kann der endpoint nun erreicht werden?
 
 ## Autoscaling
 
 In diesem Beispiel werden wir eine Applikation automatisierte hoch und runter skalieren, je nach dem unter wieviel Last die Applikation steht. Dazu verwenden wir unsere alt bekannte Ruby example webapp.
 
-```
+```bash
 oc new-project userXY-autoscale
 ```
 
