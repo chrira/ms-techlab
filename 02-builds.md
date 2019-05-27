@@ -162,7 +162,7 @@ Create an app with that image and expose it:
 
 ```bash
 oc new-app web -l app=web
-oc create route edge --service=web -l app=web
+oc create route edge --service=web
 ```
 
 Now let's try to add an easter egg in /easter-egg.txt with a new build.
