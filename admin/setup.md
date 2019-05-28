@@ -13,18 +13,22 @@ On bastion host:
 
 ### install
 
-    oc login -u ocpadmin https://api.0xshift.dev
-    oc new-project gogs
-    oc new-app -f http://bit.ly/openshift-gogs-persistent-template --param=HOSTNAME=gogs.apps.0xshift.dev
+```bash
+oc login -u ocpadmin https://api.0xshift.dev
+oc new-project gogs
+oc new-app -f http://bit.ly/openshift-gogs-persistent-template --param=HOSTNAME=gogs.apps.0xshift.dev
+```
 
 #### local persistent
 
-oc new-app -f http://bit.ly/openshift-gogs-persistent-template \
+```bash
+oc new-app -f admin/configs/gogs-persistent-template.yaml \
   --param=HOSTNAME=gogs-gogs.techlab-apps.puzzle.ch \
   --param=GOGS_VERSION=0.11.34 \
   --param=GOGS_VOLUME_CAPACITY=256Mi \
   --param=DB_VOLUME_CAPACITY=256Mi \
   -l app=gogs
+```
 
 #### local ephemeral
 
@@ -38,6 +42,7 @@ oc new-app -f admin/configs/gogs-template.yaml \
 ### route
 
 ```bash
+oc delete route gogs
 oc create route edge gogs-edge --service=gogs --hostname='gogs-gogs.techlab-apps.puzzle.ch'
 ```
 
