@@ -20,7 +20,7 @@ On bastion host:
 #### local persistent
 
 oc new-app -f http://bit.ly/openshift-gogs-persistent-template \
-  --param=HOSTNAME=git.techlab.puzzle.ch \
+  --param=HOSTNAME=gogs-gogs.techlab-apps.puzzle.ch \
   --param=GOGS_VERSION=0.11.34 \
   --param=GOGS_VOLUME_CAPACITY=256Mi \
   --param=DB_VOLUME_CAPACITY=256Mi \
@@ -30,7 +30,7 @@ oc new-app -f http://bit.ly/openshift-gogs-persistent-template \
 
 ```bash
 oc new-app -f admin/configs/gogs-template.yaml \
-  --param=HOSTNAME=git.techlab.puzzle.ch \
+  --param=HOSTNAME=gogs-gogs.techlab-apps.puzzle.ch \
   --param=GOGS_VERSION=0.11.34 \
   -l app=gogs
 ```
@@ -38,15 +38,43 @@ oc new-app -f admin/configs/gogs-template.yaml \
 ### route
 
 ```bash
-oc create route edge gogs-edge --service=gogs --hostname='git.techlab.puzzle.ch'
+oc create route edge gogs-edge --service=gogs --hostname='gogs-gogs.techlab-apps.puzzle.ch'
 ```
 
 ### git init
 
-
-Signup as ocpadmin
+1. Signup as openshift
+1. Create repos by hand
 
 Import:
 
+* git@ssh.gitlab.puzzle.ch:craaflaub/techlab.git
 * https://github.com/duritong/ruby-ex
 * https://github.com/duritong/docker-build-httpd
+* Add APPUiO php example: https://github.com/appuio/example-php-sti-helloworld.git
+
+
+```bash
+git remote add gogs https://gogs-gogs.techlab-apps.puzzle.ch/openshift/techlab.git
+git push -u gogs master
+```
+
+### user groups and access
+
+#### grant access for all users
+
+    for i in {1..30}; do oc policy add-role-to-user view user$i; done
+
+TODO: do it by group
+
+    oc adm policy add-role-to-group admin techlab -n gogs
+
+### Create techlab user group
+
+    oc adm groups new techlab
+    for i in {1..30}; do oc adm groups add-users techlab user$i; done
+
+### Grant user view access to actual project
+
+    oc project
+    for i in {1..30}; do oc policy add-role-to-user view user$i; done
