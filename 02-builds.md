@@ -150,6 +150,14 @@ Command to create a Docker build:
 oc new-build --strategy=docker --binary=true --name=web -l app=web centos/httpd-24-centos7
 ```
 
+Clone the techlab Git repository, if you do not have it already available.
+
+```bash
+git clone http://gogs.apps.0xshift.dev/ocpadmin/techlab.git
+```
+
+Navigate to the root directory of the git repository (`cd techlab`).
+
 Start the build with the data from `labs/data/02_httpd`:
 
 ```bash
