@@ -13,11 +13,8 @@ Laufende Container werden als unveränderbare Infrastruktur behandelt und sollen
 
 Mit OpenShift können Remote Shells in die Pods geöffnet werden ohne dass man darin vorgängig SSH installieren müsste. Dafür steht einem der Befehl `oc rsh` zur Verfügung.
 
-Wählen Sie mittels `oc get pods` einen Pod aus und führen Sie den folgenden Befehl aus:
-
-```bash
-oc rsh [POD]
-```
+Wählen Sie einen Pod aus und öffnen Sie die Remote Shell.
+<details><summary>Tipp</summary>oc get pods<br/>oc rsh [POD]</details><br/>
 
 Sie können nun über diese Shell Analysen im Container ausführen:
 

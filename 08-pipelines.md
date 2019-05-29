@@ -17,6 +17,8 @@ Um zu verstehen, wie OpenShift Pipelines funktionieren, wollen wir als ersten Sc
 Erstellen wir dafür ein neues Projekt mit dem Namen `userXY-buildpipeline`.
 <details><summary>Tipp</summary>oc new-project userXY-buildpipeline</details><br/>
 
+Wir brauchen dazu wieder das Techlab Git Repository.
+
 Wir legen mit folgendem Befehl die entsprechende BuildConfig an, welche das JenkinsFile, also die Pipeline, direkt beinhaltet. Ebenso wird eine zweite BuildConfig erstellt. Diese enthält die Docker BuildConfig für die eigentliche Applikation, die wir im Rahmen dieser Pipeline deployen wollen. Im vorliegenden Beispiel eine simple PHP Applikation:
 
 ```bash
@@ -208,9 +210,16 @@ Für ein Multi-Stage Deployment auf OpenShift hat sich das folgende Setup als Be
 
 Das Build Projekt haben wir oben bereits eingerichtet (`userXY-buildpipeline`). Als nächsten Schritt erstellen wir nun die Projekte für die unterschiedlichen Stages:
 
-* `oc new-project userXY-pipeline-dev`
-* `oc new-project userXY-pipeline-test`
-* `oc new-project userXY-pipeline-prod`
+* userXY-pipeline-dev
+* userXY-pipeline-test
+* userXY-pipeline-prod
+
+<details>
+    <summary>Tipp</summary>
+    oc new-project userXY-pipeline-dev<br/>
+    oc new-project userXY-pipeline-test<br/>
+    oc new-project userXY-pipeline-prod
+</details><br/>
 
 Nun müssen wir den `puller` Serviceaccount aus den entsprechenden Projekten pro Stage die nötigen Rechte geben, damit die gebuildeten Images gepullt werden können.
 
@@ -236,11 +245,17 @@ oc tag userXY-buildpipeline/application:dev userXY-buildpipeline/application:tes
 oc tag userXY-buildpipeline/application:test userXY-buildpipeline/application:prod
 ```
 
-Erstellen der Applikationen:
+Erstellen der Applikationen.
+In jeder Stage erstellen wir die Applikation anhand des vorher angelegten ImageStreams.
 
-* dev: `oc new-app userXY-buildpipeline/application:dev -n userXY-pipeline-dev`
-* test: `oc new-app userXY-buildpipeline/application:test -n userXY-pipeline-test`
-* prod: `oc new-app userXY-buildpipeline/application:prod -n userXY-pipeline-prod`
+Achtung, die Applikationen müssen im richtigen Projekt erstellt werden.
+
+<details>
+    <summary>Tipp</summary>
+    dev: oc new-app userXY-buildpipeline/application:dev -n userXY-pipeline-dev<br/>
+    test: oc new-app userXY-buildpipeline/application:test -n userXY-pipeline-test<br/>
+    prod: oc new-app userXY-buildpipeline/application:prod -n userXY-pipeline-prod
+</details><br/>
 
 In der Pipeline können wir nun mittels Setzen eines bestimmten Tags auf dem Imagestream der gebuildeten Applikatione bspw. `application:dev`, das entsprechende Image in die passende Stage promoten und deployen.
 
