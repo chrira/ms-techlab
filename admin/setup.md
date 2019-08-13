@@ -72,7 +72,7 @@ git push -u gogs master
 
 TODO: do it by group
 
-    oc adm policy add-role-to-group admin techlab -n gogs
+    oc adm policy add-role-to-group view techlab -n openshift-web-console
 
 ### Create techlab user group
 
@@ -83,3 +83,10 @@ TODO: do it by group
 
     oc project
     for i in {1..30}; do oc policy add-role-to-user view user$i; done
+
+## requirements for the labs
+
+### lab 01
+
+* techlab user group
+* add techlab user group view rights to the project openshift-web-console

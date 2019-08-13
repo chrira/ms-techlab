@@ -10,7 +10,7 @@ Create a new project from the web console called:
 
 Copy the login command from the web console (did you find this option? -> in the menu on the right hand side).
 
-    oc login https://api.0xshift.dev:443 --token=XYZ
+    oc login https://techlab.puzzle.ch:443 --token=XYZ
     oc whoami
 
 The token allows you to have a logged in session and can be used to do logins from the cli (on the API), without doing the authentication there.
@@ -80,6 +80,8 @@ How many others did add us to their projects? Let's see by get the current list 
 
     oc projects
 
+Check the changes inside the web console. Go to both of your projects and find the techlab group under *Resources -> Membership*
+
 ## Inspecting and editing other resources
 
 Everything within Openshift (Kubernetes) is represented as a resource, which we can view and depending on our privileges edit.
@@ -92,15 +94,15 @@ You can also get all resources of all namespaces (projects) you have access to:
 
     oc get all --all-namespaces
 
-Take the gogs project that has some resources to inspect.
+Take the openshift-web-console project that has some resources to inspect.
 Click on command, if you did not find the solution how to add the namespace to the command.
 
-<details><summary>command</summary>oc get all -n gogs</details><br/>
+<details><summary>command</summary>oc get all -n openshift-web-console</details><br/>
 
 Found an interesting resource you want to know about it, you can describe/get each one of them:
 
-<details><summary>general command</summary>oc describe resrourceXY resourceName -n gogs</details>
-<details><summary>command to inspect a service</summary>oc describe service gogs -n gogs</details><br/>
+<details><summary>general command</summary>oc describe resrourceXY resourceName -n openshift-web-console</details>
+<details><summary>command to inspect a service</summary>oc describe service webconsole -n openshift-web-console</details><br/>
 
 You can also edit them:
 
@@ -108,6 +110,8 @@ You can also edit them:
 
 For example let's edit our webui project.
 <details><summary>command</summary>oc edit project userXY-webui</details><br/>
+
+This was only an example. Do exit the editor by typing: *ESC* and *:* and *q*
 
 ## Deleting resources
 
@@ -123,4 +127,4 @@ You can always get an overview of your current resources by typing:
 
     oc status
 
-This will become latery handy, once we start deploying more things.
+This will become handy, once we start deploying more things.
