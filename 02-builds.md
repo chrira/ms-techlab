@@ -79,7 +79,7 @@ Command with output:
 
 ```bash
 $ oc new-build --docker-image=openshift/wildfly-160-centos7 --binary=true --name=hello-world -l app=hello-world
---> Found Docker image 5b42148 (5 days old) from Docker Hub for "openshift/wildfly-160-centos7"
+--> Found Docker image 7ff222e (2 months old) from Docker Hub for "openshift/wildfly-160-centos7"
 
     WildFly 16.0.0.Final 
     -------------------- 
@@ -87,21 +87,21 @@ $ oc new-build --docker-image=openshift/wildfly-160-centos7 --binary=true --name
 
     Tags: builder, wildfly, wildfly16
 
-    * An image stream will be created as "wildfly-160-centos7:latest" that will track the source image
+    * An image stream tag will be created as "wildfly-160-centos7:latest" that will track the source image
     * A source build using binary input will be created
-      * The resulting image will be pushed to image stream "hello-world:latest"
+      * The resulting image will be pushed to image stream tag "hello-world:latest"
       * A binary build was created, use 'start-build --from-dir' to trigger a new build
 
 --> Creating resources with label app=hello-world ...
-    imagestream "wildfly-160-centos7" created
-    imagestream "hello-world" created
-    buildconfig "hello-world" created
+    imagestream.image.openshift.io "wildfly-160-centos7" created
+    imagestream.image.openshift.io "hello-world" created
+    buildconfig.build.openshift.io "hello-world" created
 --> Success
 ```
 
 See the command output for the created resources.
 
-Check the created resources with the oc tool and inside the web console.
+Check the created resources with the oc tool and inside the web console. Do you find the created build inside the web console?
 
 ## Start the build
 
@@ -119,6 +119,8 @@ The parameter _--from-dir=._ tells the oc tool which directory to upload.
 The _--follow_ flag will show the build log on the console and wait until the build is finished.
 
 ### Create a new app
+
+Create a new app based on the Docker Image created by the binary build.
 
 ```bash
 oc new-app hello-world -l app=hello-world
@@ -153,7 +155,7 @@ oc new-build --strategy=docker --binary=true --name=web -l app=web centos/httpd-
 Clone the techlab Git repository, if you do not have it already available.
 
 ```bash
-git clone http://gogs.apps.0xshift.dev/ocpadmin/techlab.git
+git clone REPO_URL/techlab.git
 ```
 
 Navigate to the root directory of the git repository (`cd techlab`).
@@ -173,6 +175,8 @@ oc new-app web -l app=web
 oc create route edge --service=web
 ```
 
+Inside the web console click onto the route to see the website of your application.
+
 Now let's try to add an easter egg in /easter-egg.txt with a new build.
 Inspect `labs/data/02_httpd` for a hint.
 
@@ -184,3 +188,5 @@ Inspect `labs/data/02_httpd` for a hint.
     ...<br/>
     start a new build
 </details>
+
+Did it work? -> <https://web-userXY-docker-build.techlab-apps.puzzle.ch/easter-egg.txt>

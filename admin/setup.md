@@ -90,3 +90,9 @@ TODO: do it by group
 
 * techlab user group
 * add techlab user group view rights to the project openshift-web-console
+
+### lab 02
+
+* repo: this techlab repo
+* repo: <https://github.com/appuio/example-php-sti-helloworld>
+* war file: <https://github.com/appuio/hello-world-war/blob/master/repo/ch/appuio/hello-world-war/1.0.0/hello-world-war-1.0.0.war?raw=true>
