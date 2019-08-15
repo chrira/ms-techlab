@@ -96,3 +96,14 @@ TODO: do it by group
 * repo: this techlab repo
 * repo: <https://github.com/appuio/example-php-sti-helloworld>
 * war file: <https://github.com/appuio/hello-world-war/blob/master/repo/ch/appuio/hello-world-war/1.0.0/hello-world-war-1.0.0.war?raw=true>
+* OpenShift ImageStream: openshift/php:7.1
+* Docker Hub Image: "openshift/wildfly-160-centos7"
+* Docker Hub Image: "centos/httpd-24-centos7"
+
+### lab 03
+
+* repo: this techlab repo
+* Docker Hub Image: "appuio/example-spring-boot"
+* OpenShift Template: openshift/mysql-persistent
+* PV mit 256Mi
+* sql Dump file: <https://raw.githubusercontent.com/appuio/techlab/lab-3.3/labs/data/08_dump/dump.sql>

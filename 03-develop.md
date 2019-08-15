@@ -29,10 +29,11 @@ Sobald das neue Projekt erstellt wurde, können wir in OpenShift mit dem folgend
 oc new-app appuio/example-spring-boot
 ```
 
-Output:
+Command with output:
 
-```
---> Found Docker image e355426 (3 months old) from Docker Hub for "appuio/example-spring-boot"
+```bash
+$ oc new-app appuio/example-spring-boot
+--> Found Docker image 4af1141 (3 months old) from Docker Hub for "appuio/example-spring-boot"
 
     APPUiO Spring Boot App
     ----------------------
@@ -40,22 +41,25 @@ Output:
 
     Tags: builder, springboot
 
-    * An image stream will be created as "example-spring-boot:latest" that will track this image
+    * An image stream tag will be created as "example-spring-boot:latest" that will track this image
     * This image will be deployed in deployment config "example-spring-boot"
-    * Port 8080/tcp will be load balanced by service "example-spring-boot"
+    * Ports 8080/tcp, 8778/tcp, 9000/tcp, 9779/tcp will be load balanced by service "example-spring-boot"
       * Other containers can access this service through the hostname "example-spring-boot"
 
---> Creating resources with label app=example-spring-boot ...
-    imagestream "example-spring-boot" created
-    deploymentconfig "example-spring-boot" created
+--> Creating resources ...
+    imagestream.image.openshift.io "example-spring-boot" created
+    deploymentconfig.apps.openshift.io "example-spring-boot" created
     service "example-spring-boot" created
 --> Success
+    Application is not exposed. You can expose services to the outside world by executing one or more of the commands below:
+     'oc expose svc/example-spring-boot'
     Run 'oc status' to view your app.
 ```
 
 Für unser Lab verwenden wir ein APPUiO-Beispiel (Java Spring Boot Applikation):
-- Docker Hub: https://hub.docker.com/r/appuio/example-spring-boot/
-- GitHub (Source): https://github.com/appuio/example-spring-boot-helloworld
+
+* Docker Hub: https://hub.docker.com/r/appuio/example-spring-boot/
+* GitHub (Source): https://github.com/appuio/example-spring-boot-helloworld
 
 OpenShift legt die nötigen Ressourcen an, lädt das Docker Image, in diesem Fall von Docker Hub, herunter und deployt anschliessend den entsprechenden Pod.
 
@@ -295,17 +299,23 @@ example-spring-boot   ClusterIP   172.30.141.7   <none>        8080/TCP,8778/TCP
 Und nun wollen wir diesen Service veröffentlichen / exposen:
 
 ```bash
-oc create route edge --service=example-spring-boot
+oc expose service example-spring-boot
 ```
 
 Per default wird eine http Route erstellt.
+Die ist jedoch nicht sicher, darum erstellen wir noch eine https Route.
 
-Mittels `oc get routes` können wir überprüfen, ob die Route angelegt wurde.
+```bash
+oc create route edge example-spring-boot-secure --service=example-spring-boot
+```
+
+Mittels `oc get routes` können wir überprüfen, ob die Routen angelegt wurden.
 
 ```bash
 $ oc get routes
-NAME                  HOST/PORT                                   PATH      SERVICES              PORT       TERMINATION   WILDCARD
-example-spring-boot   example-spring-boot-techlab.mycluster.com             example-spring-boot   8080-tcp   edge          None
+NAME                         HOST/PORT                                         PATH      SERVICES              PORT       TERMINATION   WILDCARD
+example-spring-boot          example-spring-boot-techlab.mycluster.com                   example-spring-boot   8080-tcp                 None
+example-spring-boot-secure   example-spring-boot-secure-techlab.mycluster.com            example-spring-boot   8080-tcp   edge          None
 ```
 
 Die Applikation ist nun vom Internet her über den angegebenen Hostnamen erreichbar, Sie können also nun auf die Applikation zugreifen.
@@ -375,28 +385,31 @@ Zum Schluss schauen wir uns den Service an. Der sollte jetzt alle drei Endpoints
 ```bash
 $ oc describe svc example-spring-boot
 Name:              example-spring-boot
-Namespace:         user2-develop
+Namespace:         userXY-develop
 Labels:            app=example-spring-boot
 Annotations:       openshift.io/generated-by=OpenShiftNewApp
 Selector:          app=example-spring-boot,deploymentconfig=example-spring-boot
 Type:              ClusterIP
-IP:                172.30.141.7
+IP:                172.30.134.254
 Port:              8080-tcp  8080/TCP
 TargetPort:        8080/TCP
-Endpoints:         10.129.0.62:8080,10.131.0.37:8080,10.131.0.38:8080
+Endpoints:         10.129.0.65:8080,10.129.0.67:8080,10.131.0.8:8080
 Port:              8778-tcp  8778/TCP
 TargetPort:        8778/TCP
-Endpoints:         10.129.0.62:8778,10.131.0.37:8778,10.131.0.38:8778
+Endpoints:         10.129.0.65:8778,10.129.0.67:8778,10.131.0.8:8778
+Port:              9000-tcp  9000/TCP
+TargetPort:        9000/TCP
+Endpoints:         10.129.0.65:9000,10.129.0.67:9000,10.131.0.8:9000
 Port:              9779-tcp  9779/TCP
 TargetPort:        9779/TCP
-Endpoints:         10.129.0.62:9779,10.131.0.37:9779,10.131.0.38:9779
+Endpoints:         10.129.0.65:9779,10.129.0.67:9779,10.131.0.8:9779
 Session Affinity:  None
 Events:            <none>
 ```
 
 Skalieren von Pods innerhalb eines Services ist sehr schnell, da OpenShift einfach eine neue Instanz des Docker Images als Container startet.
 
-**Tipp:** OpenShift unterstützt auch Autoscaling, die Dokumentation dazu ist unter dem folgenden Link zu finden: https://docs.openshift.com/container-platform/3.11/dev_guide/pod_autoscaling.html - Wir werden uns damit später noch detaillierter beschäftigen.
+**Tipp:** OpenShift unterstützt auch Autoscaling, die Dokumentation dazu ist unter dem folgenden Link zu finden: <https://docs.openshift.com/container-platform/3.11/dev_guide/pod_autoscaling.html> - Wir werden uns damit später noch detaillierter beschäftigen.
 
 ## Aufgabe: skalierte App in der Web Console
 
@@ -405,7 +418,7 @@ Schauen Sie sich die skalierte Applikation auch in der Web Console an.
 ## Unterbruchsfreies Skalieren überprüfen
 
 Mit dem folgenden Befehl können Sie nun überprüfen, ob Ihr Service verfügbar ist, während Sie hoch und runter skalieren.
-Ersetzen Sie dafür `[route]` mit Ihrer definierten Route:
+Ersetzen Sie dafür `[route]` mit Ihrer definierten Route (example-spring-boot-secure):
 <details><summary>Tipp</summary>oc get route</details><br/>
 
 ```bash
@@ -430,9 +443,11 @@ Pod: example-spring-boot-4-fqh9n TIME: 15:08:05,193
 Pod: example-spring-boot-4-vdhqc TIME: 15:08:06,547
 ```
 
-Die Requests werden an die unterschiedlichen Pods geleitet, sobald man runterskaliert auf einen Pod, gibt dann nur noch einer Antwort
+Die Requests werden an die unterschiedlichen Pods geleitet, sobald man runterskaliert auf einen Pod, gibt dann nur noch einer Antwort.
 
-Was passiert nun, wenn wir nun während dem der While Befehl oben läuft, ein neues Deployment starten:
+Was passiert nun, wenn wir nun während dem der While Befehl oben läuft, ein neues Deployment starten?
+
+Das Deployment in einer neuen Shell oder über die Web Console starten.
 
 ```bash
 oc rollout latest example-spring-boot
@@ -668,9 +683,9 @@ Die Konfiguration unter Container muss dann wie folgt aussehen:
                 ],
 ```
 
-Verifizieren Sie während eines Deployment der Applikation, ob nun auch ein Update der Applikation unterbruchsfrei verläuft:
+Verifizieren Sie während eines Deployment der Applikation, ob nun auch ein Update der Applikation unterbruchsfrei verläuft.
 
-Einmal pro Sekunde ein Request:
+Dies wieder mit der selben While Schlaufe wie vorher. Einmal pro Sekunde ein Request:
 
 ```bash
 while true; do sleep 1; curl --insecure -s https://[route]/pod/; date "+ TIME: %H:%M:%S,%3N"; done
@@ -682,6 +697,8 @@ Starten des Deployments:
 $ oc rollout latest example-spring-boot
 deploymentconfig.apps.openshift.io/example-spring-boot rolled out
 ```
+
+Jetzt sollten die Antworten ohne Unterbruch vom neuen Pod kommen.
 
 ## Self Healing
 
@@ -698,7 +715,7 @@ oc get pods -w
 Löschen Sie im anderen Terminal einen Pod mit folgendem Befehl
 
 ```bash
-oc delete pod example-spring-boot-10-d8dkz
+oc delete pods -l deploymentconfig=example-spring-boot
 ```
 
 OpenShift sorgt dafür, dass wieder **n** Replicas des genannten Pods laufen.
@@ -884,9 +901,9 @@ SPRING_DATASOURCE_URL=jdbc:mysql://mysql/techlab?autoReconnect=true
 **Note:** mysql löst innerhalb Ihres Projektes via DNS Abfrage auf die Cluster IP des MySQL Service auf. Die MySQL Datenbank ist nur innerhalb des Projektes erreichbar. Der Service ist ebenfalls über den folgenden Namen erreichbar:
 
 ```
-Projektname: techlab-dockerimage
+Projektname: userXY-develop
 
-mysql.techlab-dockerimage.svc.cluster.local
+mysql.userXY-develop.svc.cluster.local
 ```
 
 Befehl für das Setzen der Umgebungsvariablen:
@@ -898,6 +915,8 @@ $ oc set env dc example-spring-boot \
       -e SPRING_DATASOURCE_PASSWORD=techlab \
       -e SPRING_DATASOURCE_DRIVER_CLASS_NAME=com.mysql.jdbc.Driver
 ```
+
+Durch die Änderung des Environments wird ein Deployment der example-spring-boot Applikation getriggert. Dabei wir der Pod / Container mit der neuen Umgebung gestartet.
 
 Über den folgenden Befehl können Sie sich die DeploymentConfig als JSON anschauen. Neu enthält die Config auch die gesetzten Umgebungsvariablen:
 
@@ -1015,13 +1034,19 @@ Danach in den MySQL Pod einloggen:
 oc rsh mysql-1-diccy
 ```
 
+Einfacher ist es den Pod über die DeploymentConfiguration zu Referenzieren.
+
+```bash
+oc rsh dc/mysql
+```
+
 Nun können Sie mittels mysql Tool auf die Datenbank verbinden und die Tabellen anzeigen:
 
 ```bash
 $ mysql -u$MYSQL_USER -p$MYSQL_PASSWORD -h$MYSQL_SERVICE_HOST techlab
 mysql: [Warning] Using a password on the command line interface can be insecure.
 Welcome to the MySQL monitor.  Commands end with ; or \g.
-Your MySQL connection id is 1005
+Your MySQL connection id is 42
 Server version: 5.7.24 MySQL Community Server (GPL)
 
 Copyright (c) 2000, 2018, Oracle and/or its affiliates. All rights reserved.
@@ -1050,7 +1075,7 @@ Was enthält die hello Tabelle?
 
 Die Aufgabe ist es, in den MySQL Pod den [Dump](https://raw.githubusercontent.com/appuio/techlab/lab-3.3/labs/data/08_dump/dump.sql) einzuspielen.
 
-**Tipp:** Mit `oc rsync` können Sie lokale Dateien in einen Pod kopieren. Alternativ kann auch curl im mysql container verwendet werden.
+**Tipp:** Mit `oc rsync` oder `oc cp` können Sie lokale Dateien in einen Pod kopieren. Alternativ kann auch curl im mysql container verwendet werden.
 
 **Achtung:** Beachten Sie, dass dabei der rsync-Befehl des Betriebssystems verwendet wird. Auf UNIX-Systemen kann rsync mit dem Paketmanager, auf Windows kann bspw. [cwRsync](https://www.itefix.net/cwrsync) installiert werden. Ist eine Installation von rsync nicht möglich, kann stattdessen bspw. in den Pod eingeloggt und via `curl -O <URL>` der Dump heruntergeladen werden.
 
@@ -1064,8 +1089,8 @@ Die Aufgabe ist es, in den MySQL Pod den [Dump](https://raw.githubusercontent.co
 
 Sind die Einträge von früher noch da?
 
-- Wenn ja, wieso?
-- Wenn nein, wieso?
+* Wenn ja, wieso?
+* Wenn nein, wieso?
 
 ---
 
@@ -1082,7 +1107,7 @@ oc rsync ./labs/data/08_dump mysql-1-diccy:/tmp/
 In den MySQL Pod einloggen:
 
 ```bash
-oc rsh mysql-1-diccy
+oc rsh dc/mysql
 ```
 
 Bestehende Datenbank löschen:
