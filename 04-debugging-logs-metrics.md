@@ -71,6 +71,7 @@ oc logs -p [POD]
 Mit OpenShift wird ein EFK (Elasticsearch, Fluentd, Kibana) Stack mitgeliefert, der sämtliche Logfiles sammelt, rotiert und aggregiert. Kibana erlaubt es Logs zu durchsuchen, zu filtern und grafisch aufzubereiten.
 
 Kibana ist über den Link "View Archive" im Web-UI bei den Logs des Pods erreichbar. Melde dich im Kibana an, schaue dich um und versuche eine Suche für bestimmte Logs zu definieren.
+<details><summary>Beispiel: mysql Container Logs ohne error Meldung</summary>kubernetes.container_name:"mysql" AND -message:"error"</details><br/>
 
 ## Metriken
 
@@ -80,13 +81,13 @@ Sie können mit Hilfe eines direkten Logins auf einen Pod nun den Ressourcenverb
 
 ## Aufgabe: Port Forwarding
 
-OpenShift 3 erlaubt es, beliebige Ports von der Entwicklungs-Workstation auf einen Pod weiterzuleiten. Dies ist z.B. nützlich, um auf Administrationskonsolen, Datenbanken, usw. zuzugreifen, die nicht gegen das Internet exponiert werden und auch sonst nicht erreichbar sind. Im Gegensatz zu OpenShift 2 werden die Portweiterleitungen über dieselbe HTTPS-Verbindung getunnelt, die der OpenShift Client (oc) auch sonst benutzt. Dies erlaubt es auch dann auf OpenShift 3 Platformen zuzugreifen, wenn sich restriktive Firewalls und/oder Proxies zwischen Workstation und OpenShift befinden.
+OpenShift 3 erlaubt es, beliebige Ports von der Entwicklungs-Workstation auf einen Pod weiterzuleiten. Dies ist z.B. nützlich, um auf Administrationskonsolen, Datenbanken, usw. zuzugreifen, die nicht gegen das Internet exponiert werden und auch sonst nicht erreichbar sind. Im Gegensatz zu OpenShift 2 werden die Portweiterleitungen über dieselbe HTTPS-Verbindung getunnelt, die der OpenShift Client (oc) auch sonst benutzt. Dies erlaubt es auch dann auf OpenShift 3 Plattformen zuzugreifen, wenn sich restriktive Firewalls und/oder Proxies zwischen Workstation und OpenShift befinden.
 
 Übung: Auf die Spring Boot Metrics zugreifen.
 
-```
-oc get pod --namespace="userXY-develop"
-oc port-forward example-spring-boot-1-xj1df 9000:9000 --namespace="userXY-develop"
+```bash
+oc get pods
+oc port-forward example-spring-boot-1-xj1df 9000:9000
 ```
 
 Nicht vergessen den Pod Namen an die eigene Installation anzupassen. Falls installiert kann dafür Autocompletion verwendet werden.
@@ -138,8 +139,11 @@ Dies wird unser Deployment neu ausrollen und die Limiten enforcen.
 
 Sobald unser neuer Container läuft können wir nun den autoscaler konfigurieren:
 
+Befehl mit Bestätigung:
+
 ```bash
-oc autoscale dc ruby-ex --min 1 --max 3 --cpu-percent=25
+$ oc autoscale dc ruby-ex --min 1 --max 3 --cpu-percent=25
+horizontalpodautoscaler.autoscaling/ruby-ex autoscaled
 ```
 
 Nun können wir auf dem Service Last erzeugen.

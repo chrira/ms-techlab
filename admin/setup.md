@@ -107,3 +107,11 @@ TODO: do it by group
 * OpenShift Template: openshift/mysql-persistent
 * PV mit 256Mi
 * sql Dump file: <https://raw.githubusercontent.com/appuio/techlab/lab-3.3/labs/data/08_dump/dump.sql>
+
+### lab 04
+
+* OpenShift Project from lab 03: userXY-develop
+* repo: https://github.com/chrira/ruby-ex.git#load
+* OpenShift ImageStream: : "openshift/ruby:2.5"
+* OpenShift metrics server: <https://docs.openshift.com/container-platform/3.11/dev_guide/pod_autoscaling.html>
+  * Test: `oc get project | grep openshift-metrics-server`
