@@ -10,8 +10,8 @@ oc new-project userXY-prometheus
 
 Clone the techlab Git repository, if you do not have it already available.
 
-```
-git clone http://gogs.apps.0xshift.dev/ocpadmin/techlab.git
+```bash
+git clone REPO_URL/techlab.git
 ```
 
 Navigate to the root directory of the git repository from gogs (`cd techlab`).
