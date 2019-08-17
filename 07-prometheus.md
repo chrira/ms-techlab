@@ -77,7 +77,7 @@ spec
 ```
 
 Check the changes on the targets view of Prometheus (Status -> Targets):
-https://prometheus-userXY-prometheus.apps.0xshift.dev/targets
+<https://prometheus-userXY-prometheus.techlab-apps.puzzle.ch/targets>
 
 Is the prometheus-app pod visible? Is it UP?
 
