@@ -257,6 +257,15 @@ Achtung, die Applikationen müssen im richtigen Projekt erstellt werden.
     prod: oc new-app userXY-buildpipeline/application:prod -n userXY-pipeline-prod
 </details><br/>
 
+Danach können wir noch die Applikation exposen.
+
+<details>
+    <summary>Tipp</summary>
+    dev: oc create route edge --service=application -n userXY-pipeline-dev<br/>
+    test: oc create route edge --service=application -n userXY-pipeline-test<br/>
+    prod: oc create route edge --service=application -n userXY-pipeline-prod
+</details><br/>
+
 In der Pipeline können wir nun mittels Setzen eines bestimmten Tags auf dem Imagestream der gebuildeten Applikatione bspw. `application:dev`, das entsprechende Image in die passende Stage promoten und deployen.
 
 Passen Sie ihre Pipeline entweder in der Web Console oder in der BuildConfig wie folgt an (die Werte für die Variablen `dev_project`, `test_project`, `prod_project` entsprechend setzen):
@@ -337,11 +346,9 @@ node ('maven') {
 
 Führen Sie die Pipeline erneut aus und schauen Sie sich an, wie nun die gebuildete Applikation von Stage zu Stage deployt wird.
 
-
 ## Jenkins Pipeline Sprache
 
 Unter <https://github.com/puzzle/jenkins-techlab> finden Sie ein entsprechendes Hands-on Lab zur Jenkins Pipeline Sprache. Die Syntax ist [hier](https://jenkins.io/doc/book/pipeline/syntax/) beschrieben.
-
 
 ## Deployment von Resourcen und Konfiguration
 
@@ -356,6 +363,7 @@ Die Konfigurationswerte der Umgebungsvariablen zur Konfiguration der eigentliche
 Ändern die Parameter in dieser Konfiguration auf einer Umgebung, bspw. Benutzername oder Passwort, sollen diese Werte mittels Pipeline deployt werden.
 
 Als Grundprinzip kann man sich das so vorstellen:
+
 * Resourcen werden als Files (`yaml` oder `json`) im Git verwaltet
 * Im Rahmen der Deployment Pipeline werden diese Ressourcen entsprechend auf dem Kubernetes Cluster angewandt
 

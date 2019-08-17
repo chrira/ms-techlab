@@ -120,4 +120,21 @@ TODO: do it by group
 
 * repo: <https://github.com/jbossdemocentral/coolstore-microservice/>
   * <https://github.com/jbossdemocentral/coolstore-microservice/#troubleshooting>
-  
+
+### lab 07
+
+* repo: this techlab repo
+* Docker Hub Image: "fabric8/s2i-java"
+* Docker Hub Image: "openshift/oauth-proxy:v1.0.0"
+* Docker Hub Image: "openshift/prometheus:v2.0.0"
+* Docker Hub Image: "openshift/oauth-proxy:v1.0.0"
+* Docker Hub Image: "openshift/prometheus-alert-buffer:v0.0.2"
+* Docker Hub Image: "openshift/prometheus-alertmanager:v0.9.1"
+
+### lab 08
+
+* repo: this techlab repo
+* repo: <https://github.com/appuio/example-php-sti-helloworld>
+* OpenShift ImageStream: "openshift/php:7.0"
+* Docker Hub Image: "openshift/jenkins-slave-maven-centos7"
+* Red Hat Docker Image: "registry.access.redhat.com/openshift3/jenkins-slave-maven-rhel7:v3.11"
